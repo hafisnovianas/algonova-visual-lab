@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pertemuan 3: String & Interpreter - Algo Visual Lab</title>
+  <link rel="stylesheet" href="../shared/css/style.css">
+  <script type="module" src="../shared/components/index.js"></script>
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Web Component: Lesson Header -->
+    <lesson-header 
+      lesson="3" 
+      title="Gerbong String & Interpreter" 
+      subtitle="Stasiun Praktik Indeks, Pisau Slicing, Detektif .find(), dan Saklar Biner">
+    </lesson-header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-index">
+        <span style="font-size: 1.25rem;">🚂</span>
+        <span>1. Gerbong Indeks</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-slice">
+        <span style="font-size: 1.25rem;">✂️</span>
+        <span>2. Pisau Slicing</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-find">
+        <span style="font-size: 1.25rem;">🔍</span>
+        <span>3. Detektif .find()</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-types">
+        <span style="font-size: 1.25rem;">🤖</span>
+        <span>4. Mesin str vs int</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-biner">
+        <span style="font-size: 1.25rem;">🧠</span>
+        <span>5. Saklar Biner</span>
+      </button>
+    </nav>
+
+    <!-- TAB 1: GERBONG INDEKS & LEN() -->
+    <section id="tab-index" class="tab-content active">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-amber);">
+              <span>🚂</span> Stasiun 1: Konsep Roda Indeks & len()
+            </h2>
+            <p class="card-subtitle">Komputer selalu mulai menghitung nomor roda dari angka 0, bukan 1!</p>
+          </div>
+          <div style="text-align: right;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Total Panjang:</span>
+            <span id="label-len" style="font-size: 1.35rem; font-weight: 900; color: var(--accent-emerald); font-family: var(--font-mono); margin-left: 0.25rem;">0</span>
+          </div>
+        </div>
+
+        <!-- Input Kata & Preset Cepat -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">
+            Ketik kata di bawah atau pilih tombol cepat:
+          </label>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <input type="text" id="input-string-1" value="Bunga Matahari" class="input-text" style="flex: 1; min-width: 220px;" placeholder="Ketik kata apa saja...">
+            <sound-button class="badge badge-amber" style="padding: 0.6rem 0.85rem;" data-preset="Bunga Matahari">Bunga Matahari</sound-button>
+            <sound-button class="badge badge-amber" style="padding: 0.6rem 0.85rem;" data-preset="Kate dan Jim">Kate dan Jim</sound-button>
+            <sound-button class="badge badge-amber" style="padding: 0.6rem 0.85rem;" data-preset="Minecraft">Minecraft</sound-button>
+            <sound-button class="badge badge-amber" style="padding: 0.6rem 0.85rem;" data-preset="Roblox">Roblox</sound-button>
+          </div>
+        </div>
+
+        <!-- Wadah Rel Kereta (Train Track) -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600;">
+            Rel Gerbong String (Klik tiap huruf untuk mendengarkan bunyinya):
+          </span>
+          <div id="train-container" class="train-track">
+            <!-- Gerbong <train-car> dirender via script.js -->
+          </div>
+        </div>
+
+        <!-- Live Code Feedback -->
+        <div class="code-banner">
+          <div>
+            <div class="code-title">Kode Python:</div>
+            <div id="live-code-index" class="code-val" style="color: var(--accent-emerald);">teks = "Bunga Matahari"</div>
+          </div>
+          <div>
+            <div class="code-title">Hasil len(teks):</div>
+            <div id="live-result-len" class="code-val" style="color: var(--accent-amber);">len(teks) &rarr; 14</div>
+          </div>
+          <div>
+            <div class="code-title">Huruf Pertama teks[0]:</div>
+            <div id="live-result-first" class="code-val" style="color: var(--accent-sky);">teks[0] &rarr; 'B'</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: PISAU SLICING -->
+    <section id="tab-slice" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-sky);">
+              <span>✂️</span> Stasiun 2: Pisau Pemotong (Slicing)
+            </h2>
+            <p class="card-subtitle">Rumus: <code>teks[MULAI : SEBELUM_AKHIR]</code> &bull; Indeks akhir TIDAK diikutkan!</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <sound-button class="badge badge-amber" id="preset-slice-kate">Potong 'Kate' [0:4]</sound-button>
+            <sound-button class="badge badge-amber" id="preset-slice-jim">Potong 'Jim' [9:12]</sound-button>
+          </div>
+        </div>
+
+        <!-- Sliders -->
+        <div class="grid-2">
+          <div class="slider-group">
+            <div class="slider-label">
+              <span style="color: var(--accent-emerald);">Titik Mulai (Start): <code id="val-slice-start" style="font-size: 1rem;">0</code></span>
+              <span style="color: var(--text-secondary);">Mulai dari huruf ke-</span>
+            </div>
+            <input type="range" id="slider-start" min="0" max="14" value="0">
+          </div>
+          <div class="slider-group">
+            <div class="slider-label">
+              <span style="color: var(--accent-rose);">Titik Berhenti (Stop): <code id="val-slice-end" style="font-size: 1rem;">4</code></span>
+              <span style="color: var(--text-secondary);">Berhenti sebelum huruf ke-</span>
+            </div>
+            <input type="range" id="slider-end" min="0" max="14" value="4">
+          </div>
+        </div>
+
+        <!-- Rel Slicing -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600;">
+            Balok yang Berhasil Dipotong (Menyala Emas):
+          </span>
+          <div id="slice-container" class="train-track">
+            <!-- Gerbong slicing dirender via script.js -->
+          </div>
+        </div>
+
+        <!-- Hasil Slicing -->
+        <div class="code-banner">
+          <div>
+            <div class="code-title">Sintaks Python:</div>
+            <div id="slice-code-syntax" class="code-val" style="color: var(--accent-sky);">potongan = teks[0:4]</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="code-title">Hasil Teks:</div>
+            <div id="slice-result-output" class="code-val" style="font-size: 1.35rem; color: var(--accent-amber);">"Kate"</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: DETEKTIF FIND -->
+    <section id="tab-find" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-violet);">
+              <span>🔍</span> Stasiun 3: Detektif Pencari Kata (.find)
+            </h2>
+            <p class="card-subtitle">Jika ketemu: komputer memberi <b>nomor indeks awalnya</b>. Jika TIDAK ada: hasilnya mutlak <b>-1</b>!</p>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">Kalimat Sumber:</label>
+            <input type="text" id="find-source" value="Hotel ini luar biasa! Pantai yang indah!" class="input-text" style="font-family: var(--font-mono); font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">Kata yang Dicari:</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" id="find-query" value="indah" class="input-text" style="font-family: var(--font-mono); font-weight: 700; color: var(--accent-violet);">
+              <sound-button id="btn-run-find" class="badge badge-amber" style="padding: 0.75rem 1.25rem; font-weight: 800;">CARI</sound-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preset Cari Cepat -->
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-secondary);">Tes Cepat:</span>
+          <sound-button class="badge badge-amber" data-find-preset="Hotel">Cari 'Hotel' (ada di 0)</sound-button>
+          <sound-button class="badge badge-amber" data-find-preset="indah">Cari 'indah' (ada di 33)</sound-button>
+          <sound-button class="badge badge-rose" data-find-preset="pizza">Cari 'pizza' (Nggak ada = -1)</sound-button>
+        </div>
+
+        <!-- Radar Visual -->
+        <div id="find-radar" class="train-track" style="gap: 0.35rem;">
+          <!-- Radar karakter dirender JS -->
+        </div>
+
+        <!-- Hasil Pencarian -->
+        <div class="grid-2">
+          <div class="code-banner">
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Kode: <code>teks.find('<span id="find-word-label">indah</span>')</code></span>
+            <div id="find-res-badge" class="badge badge-emerald" style="font-size: 0.9rem; padding: 0.35rem 0.75rem;">Hasil: 33</div>
+          </div>
+          <div class="code-banner">
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Operator: <code>'kata' in teks</code></span>
+            <div id="find-bool-badge" class="badge badge-emerald" style="font-size: 0.9rem; padding: 0.35rem 0.75rem;">True (Ada!)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: MESIN STR VS INT -->
+    <section id="tab-types" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-rose);">
+              <span>🤖</span> Stasiun 4: Laboratorium Tipe Data (str vs int)
+            </h2>
+            <p class="card-subtitle">Melihat langsung perbedaan operator <code>+</code> pada Angka vs Teks!</p>
+          </div>
+        </div>
+
+        <!-- 3 Mesin -->
+        <div class="grid-3">
+          <div class="card" style="background: rgba(2, 6, 23, 0.6); border-color: rgba(16, 185, 129, 0.4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald);">1. MESIN MATEMATIKA</span>
+              <span class="badge badge-emerald">int + int</span>
+            </div>
+            <div style="background: var(--bg-input); padding: 0.75rem; text-align: center; border-radius: 8px; font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--accent-emerald);">
+              5 + 5
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">Keduanya angka murni, jadi dijumlahkan.</p>
+            <div style="background: rgba(16, 185, 129, 0.15); padding: 0.5rem; text-align: center; border-radius: 8px;">
+              <span style="font-size: 1.5rem; font-weight: 900; color: var(--accent-emerald); font-family: var(--font-mono);">10</span>
+            </div>
+          </div>
+
+          <div class="card" style="background: rgba(2, 6, 23, 0.6); border-color: rgba(245, 158, 11, 0.4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-amber);">2. MESIN GANDENG TEKS</span>
+              <span class="badge badge-amber">str + str</span>
+            </div>
+            <div style="background: var(--bg-input); padding: 0.75rem; text-align: center; border-radius: 8px; font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--accent-amber);">
+              "5" + "5"
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">Ada tanda kutip, digandeng seperti gerbong.</p>
+            <div style="background: rgba(245, 158, 11, 0.15); padding: 0.5rem; text-align: center; border-radius: 8px;">
+              <span style="font-size: 1.5rem; font-weight: 900; color: var(--accent-amber); font-family: var(--font-mono);">"55"</span>
+            </div>
+          </div>
+
+          <div class="card" style="background: rgba(2, 6, 23, 0.6); border-color: rgba(244, 63, 94, 0.4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-rose);">3. TOMBOL BAHAYA</span>
+              <span class="badge badge-rose">str + int</span>
+            </div>
+            <div style="background: var(--bg-input); padding: 0.75rem; text-align: center; border-radius: 8px; font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--accent-rose);">
+              "Umur: " + 15
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">Komputer bingung! Mau hitung atau gandeng?</p>
+            <div style="background: rgba(244, 63, 94, 0.15); padding: 0.5rem; text-align: center; border-radius: 8px;">
+              <span style="font-size: 1.1rem; font-weight: 900; color: var(--accent-rose); font-family: var(--font-mono);">💥 TypeError!</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulator Ubah str() -->
+        <div class="card" style="background: rgba(2, 6, 23, 0.8);">
+          <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: #cbd5e1;">Mantra Ajaib str():</div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem;">
+            <input type="number" id="input-str-convert" value="2026" class="input-text" style="width: 140px; font-family: var(--font-mono); text-align: center;">
+            <span style="color: var(--text-secondary);">&rarr; dimasukkan ke &rarr;</span>
+            <span class="badge badge-amber" style="font-size: 0.95rem; font-family: var(--font-mono); padding: 0.4rem 0.8rem;">str(<span id="label-convert-in">2026</span>)</span>
+            <span style="color: var(--text-secondary);">&rarr; menjadi teks: &rarr;</span>
+            <span id="label-convert-out" style="font-size: 1.25rem; font-weight: 900; color: var(--accent-amber); font-family: var(--font-mono); background: var(--bg-card); padding: 0.3rem 0.85rem; border-radius: 8px; border: 1px solid var(--accent-amber);">"2026"</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: SAKLAR BINER -->
+    <section id="tab-biner" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-emerald);">
+              <span>🧠</span> Stasiun 5: Otak Komputer (Interpreter & Sinyal Biner)
+            </h2>
+            <p class="card-subtitle">Komputer fisik aslinya hanya tahu sinyal listrik 0 dan 1. Interpreter yang menerjemahkannya!</p>
+          </div>
+        </div>
+
+        <!-- 3 Tahap Alur -->
+        <div class="grid-3">
+          <div class="card" style="text-align: center; background: rgba(2, 6, 23, 0.6);">
+            <span style="font-size: 2.25rem;">🧑‍💻</span>
+            <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-sky); margin: 0.5rem 0;">1. Kamu (Programmer)</h3>
+            <p style="font-size: 0.75rem; color: var(--text-secondary);">Menulis instruksi bahasa Python manusia:</p>
+            <div style="background: var(--bg-input); padding: 0.5rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-sky); margin-top: 0.5rem;">
+              print("Halo")
+            </div>
+          </div>
+
+          <div class="card" style="text-align: center; background: rgba(2, 6, 23, 0.6); border-color: rgba(245, 158, 11, 0.5);">
+            <span style="font-size: 2.25rem;">⚙️</span>
+            <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-amber); margin: 0.5rem 0;">2. Interpreter (Penerjemah)</h3>
+            <p style="font-size: 0.75rem; color: var(--text-secondary);">Menerjemahkan baris per baris ke bahasa mesin:</p>
+            <div style="background: rgba(245, 158, 11, 0.2); padding: 0.5rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-amber); margin-top: 0.5rem; font-weight: 700;">
+              Translating...
+            </div>
+          </div>
+
+          <div class="card" style="text-align: center; background: rgba(2, 6, 23, 0.6);">
+            <span style="font-size: 2.25rem;">💻</span>
+            <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-emerald); margin: 0.5rem 0;">3. Komputer Fisik</h3>
+            <p style="font-size: 0.75rem; color: var(--text-secondary);">Menjalankan sinyal saklar listrik:</p>
+            <div style="background: var(--bg-input); padding: 0.5rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-emerald); margin-top: 0.5rem; letter-spacing: 2px;">
+              01001000 01100001
+            </div>
+          </div>
+        </div>
+
+        <!-- Saklar Biner Interaktif -->
+        <div class="card" style="background: rgba(2, 6, 23, 0.8);">
+          <div style="text-align: center; margin-bottom: 1rem;">
+            <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-primary);">
+              Saklar Listrik Komputer (Klik tombol untuk ubah 0 dan 1):
+            </h4>
+          </div>
+          <div class="switch-grid" id="switch-container">
+            <!-- 8 tombol saklar dirender JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Web Component: Teacher Notes (Drawer Terapung di Kanan Bawah) -->
+    <teacher-notes>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <h4 style="font-weight: 800; color: var(--accent-amber); margin-bottom: 0.25rem;">TASK 51172 (Level 1–9):</h4>
+          <ul style="padding-left: 1.25rem; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.35rem;">
+            <li><b>L1 (Pilihan Ganda):</b> Centang 4 opsi: mulai dari 0, potong awal-akhir, simbol dapat nomor, hasil -1 jika tidak ada.</li>
+            <li><b>L2:</b> Komik (langsung Next).</li>
+            <li><b>L3-4:</b> Mengetik kode string & .find().</li>
+            <li><b>L5 (Panjang):</b> <code>panjang = len(masukan)</code></li>
+            <li><b>L6 (Nomor Bangunan):</b> <code>[9]</code>, <code>[12]</code>, <code>[19]</code></li>
+            <li><b>L7 (Slicing):</b> <code>iklan_masukan = masukan[0:14]</code></li>
+            <li><b>L8 (Find):</b> <code>hasil1 = makanan.find(cari1)</code></li>
+            <li><b>L9:</b> <code>masukan.lower()</code> lalu cari dengan <code>.find()</code></li>
+          </ul>
+        </div>
+        <hr style="border-color: #334155;">
+        <div>
+          <h4 style="font-weight: 800; color: var(--accent-sky); margin-bottom: 0.25rem;">TASK 51173 (Level 1–8):</h4>
+          <ul style="padding-left: 1.25rem; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.35rem;">
+            <li><b>L1 (Pilihan Ganda):</b> Centang 4 opsi: fungsi str(), interpreter paham data type, sinyal 0-1, interpreter program spesial.</li>
+            <li><b>L2 (Kategori):</b> String (kutip ganda), Angka (int), Error (kutip campur '").</li>
+            <li><b>L3-4:</b> Mengetik str(25) & str(telepon).</li>
+            <li><b>L5:</b> Tambahkan tanda <code>+</code> di searching.</li>
+            <li><b>L6:</b> Ubah ID jadi <code>str(nomor_id)</code>.</li>
+            <li><b>L7:</b> Potong Kate <code>[0:4]</code> dan Jim <code>[9:12]</code>.</li>
+            <li><b>L8:</b> <code>print(nilai + '-' + pesan)</code>.</li>
+          </ul>
+        </div>
+      </div>
+    </teacher-notes>
+
+  </div>
+
+  <!-- Script Khusus Pertemuan 3 -->
+  <script type="module" src="script.js"></script>
+</body>
+</html>

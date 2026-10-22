@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algo Visual Lab - Portal Media Peraga Interaktif</title>
+  <link rel="stylesheet" href="shared/css/style.css">
+  <script type="module" src="shared/components/index.js"></script>
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Header Portal -->
+    <header class="card" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.5rem 2rem;">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <span style="font-size: 2.75rem;">🚀</span>
+        <div>
+          <h1 style="font-size: 1.75rem; font-weight: 900; color: #f59e0b; letter-spacing: -0.5px;">Algo Visual Lab</h1>
+          <p style="font-size: 0.9rem; color: #94a3b8;">Portal Media Peraga Interaktif Coding Python &bull; Khusus Pembelajaran ADHD & Neurodivergent</p>
+        </div>
+      </div>
+      <div>
+        <span class="badge badge-emerald" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+          ✨ Native Web Components
+        </span>
+      </div>
+    </header>
+
+    <!-- Section Intro Guru -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9)); border-color: rgba(245, 158, 11, 0.3);">
+      <h2 style="font-size: 1.1rem; font-weight: 800; color: #fde68a; margin-bottom: 0.35rem;">
+        👋 Selamat Datang di Alat Bantu Ajar Tutor
+      </h2>
+      <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+        Pilih pertemuan yang akan diajarkan hari ini. Setiap pertemuan dilengkapi dengan simulator visual yang dapat dimanipulasi langsung oleh siswa, efek suara dopamin, serta tombol <b>Kunci Jawaban Guru</b> di pojok kanan bawah.
+      </p>
+    </div>
+
+    <!-- Grid Kartu Pertemuan -->
+    <section>
+      <h2 style="font-size: 1.15rem; font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <span>📚</span> Daftar Pertemuan
+      </h2>
+      
+      <div class="grid-3">
+        <!-- Pertemuan 1 -->
+        <lesson-card 
+          lesson="1" 
+          title="Variabel & Assignment" 
+          desc="Konsep dasar kotak penyimpanan memori dan penetapan nilai variabel di komputer." 
+          icon="📦" 
+          status="soon">
+        </lesson-card>
+
+        <!-- Pertemuan 2 -->
+        <lesson-card 
+          lesson="2" 
+          title="Tipe Data Angka & Input" 
+          desc="Penjumlahan, pengurangan, fungsi input() keyboard dan perhitungan matematika." 
+          icon="🔢" 
+          status="soon">
+        </lesson-card>
+
+        <!-- Pertemuan 3 (READY) -->
+        <lesson-card 
+          lesson="3" 
+          title="String & Interpreter" 
+          desc="Gerbong kereta indeks [0], pisau pemotong slicing, radar pencarian .find(), dan saklar biner komputer." 
+          icon="🚂" 
+          href="pertemuan-03-string/index.html" 
+          status="ready">
+        </lesson-card>
+
+        <!-- Pertemuan 4 -->
+        <lesson-card 
+          lesson="4" 
+          title="Konstruksi Bersarang" 
+          desc="Percabangan if-else bertingkat dan alur logika keputusan rel kereta bercabang." 
+          icon="🔀" 
+          status="soon">
+        </lesson-card>
+
+        <!-- Pertemuan 5 -->
+        <lesson-card 
+          lesson="5" 
+          title="Perulangan (Loops)" 
+          desc="Konsep while dan for loop dianalogikan seperti kincir putar dan ban berjalan otomatis." 
+          icon="🔁" 
+          status="soon">
+        </lesson-card>
+
+        <!-- Pertemuan 6 -->
+        <lesson-card 
+          lesson="6" 
+          title="Proyek Game Ping-Pong" 
+          desc="Menggabungkan semua konsep logika menjadi game arkade yang interaktif." 
+          icon="🏓" 
+          status="soon">
+        </lesson-card>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 2rem 0; font-size: 0.8rem; color: #64748b;">
+      Algo Visual Lab &bull; Dibuat khusus untuk pengajaran efektif dan bebas stres siswa ADHD
+    </footer>
+
+  </div>
+</body>
+</html>
