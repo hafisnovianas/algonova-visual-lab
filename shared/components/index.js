@@ -8,6 +8,7 @@ import { TrainCar } from './TrainCar.js';
 import { LessonHeader } from './LessonHeader.js';
 import { TeacherNotes } from './TeacherNotes.js';
 import { LessonCard } from './LessonCard.js';
+import { CodeXRay } from './CodeXRay.js';
 
 // Definisikan Custom Elements ke browser
 if (!customElements.get('sound-button')) {
@@ -25,5 +26,8 @@ if (!customElements.get('teacher-notes')) {
 if (!customElements.get('lesson-card')) {
   customElements.define('lesson-card', LessonCard);
 }
+if (!customElements.get('code-xray')) {
+  customElements.define('code-xray', CodeXRay);
+}
 
-export { SoundButton, TrainCar, LessonHeader, TeacherNotes, LessonCard };
+export { SoundButton, TrainCar, LessonHeader, TeacherNotes, LessonCard, CodeXRay };

@@ -304,3 +304,115 @@ input[type="range"] {
   color: var(--text-muted);
   border: 1px solid var(--border-color);
 }
+
+/* ==========================================================================
+   X-RAY CODE INSPECTOR & ANATOMY STYLES
+   ========================================================================== */
+
+.xray-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-md);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+}
+
+.xray-chip:hover {
+  transform: translateY(-2px) scale(1.04);
+}
+
+.chip-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  background: #334155;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+
+.chip-code {
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.xray-box-chip {
+  background: rgba(59, 130, 246, 0.15);
+  border: 2px solid #3b82f6;
+  color: #93c5fd;
+}
+.xray-box-chip:hover {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+.xray-arrow-chip {
+  background: rgba(245, 158, 11, 0.15);
+  border: 2px solid #f59e0b;
+  color: #fde68a;
+}
+.xray-arrow-chip:hover {
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+}
+
+.xray-str-chip {
+  background: rgba(16, 185, 129, 0.15);
+  border: 2px solid #10b981;
+  color: #a7f3d0;
+}
+.xray-str-chip:hover {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.xray-len-chip {
+  background: rgba(16, 185, 129, 0.1);
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-lg);
+}
+
+/* Pita Meteran len() */
+.meter-tape {
+  display: flex;
+  background: repeating-linear-gradient(
+    90deg,
+    #fbbf24,
+    #fbbf24 15px,
+    #f59e0b 15px,
+    #f59e0b 30px
+  );
+  color: #0f172a;
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.5rem;
+  font-family: var(--font-mono);
+  font-weight: 900;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  overflow-x: auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.meter-unit {
+  background: #0f172a;
+  color: #fbbf24;
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes slide-into-box {
+  0% { transform: translateY(-20px) scale(0.9); opacity: 0; }
+  60% { transform: translateY(4px) scale(1.05); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.slide-in-anim {
+  animation: slide-into-box 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+

@@ -26,6 +26,110 @@ tabButtons.forEach(btn => {
 });
 
 // ==========================================
+// 1.5. TAB 0: BEDAH KODE (X-RAY & SINTAKS)
+// ==========================================
+const xrayInputVar = document.getElementById('xray-input-var');
+const xrayInputVal = document.getElementById('xray-input-val');
+const btnXrayInsert = document.getElementById('btn-xray-insert');
+const xrayChestLabel = document.getElementById('xray-chest-label');
+const xrayChestContent = document.getElementById('xray-chest-content');
+const xrayChestVisual = document.getElementById('xray-chest-visual');
+const btnRunMeter = document.getElementById('btn-run-meter');
+const xrayMeterTapeDisplay = document.getElementById('xray-meter-tape-display');
+const liveCodeXray = document.getElementById('live-code-xray');
+const btnXrayModeAssign = document.getElementById('btn-xray-mode-assign');
+const btnXrayModeLen = document.getElementById('btn-xray-mode-len');
+
+function syncXRay() {
+  const vName = xrayInputVar.value || 'masukan';
+  const vVal = xrayInputVal.value || 'Bunga Matahari';
+
+  if (xrayChestLabel) xrayChestLabel.textContent = vName;
+  if (xrayChestContent) xrayChestContent.textContent = `"${vVal}"`;
+
+  if (liveCodeXray) {
+    liveCodeXray.setAttribute('var-name', vName);
+    liveCodeXray.setAttribute('str-val', vVal);
+    liveCodeXray.render();
+  }
+
+  // Sinkronkan juga ke Stasiun 1 Gerbong
+  if (inputStr1) {
+    inputStr1.value = vVal;
+    renderTrain();
+  }
+}
+
+if (xrayInputVar && xrayInputVal) {
+  xrayInputVar.addEventListener('input', syncXRay);
+  xrayInputVal.addEventListener('input', syncXRay);
+}
+
+if (btnXrayInsert) {
+  btnXrayInsert.addEventListener('click', () => {
+    audioSynth.playPreset('success');
+    xrayChestContent.classList.remove('slide-in-anim');
+    void xrayChestContent.offsetWidth; // trigger reflow
+    xrayChestContent.classList.add('slide-in-anim');
+    syncXRay();
+  });
+}
+
+if (btnXrayModeAssign) {
+  btnXrayModeAssign.addEventListener('click', () => {
+    audioSynth.playTone(500, 'sine', 0.05);
+    liveCodeXray.setAttribute('mode', 'assign');
+    syncXRay();
+  });
+}
+
+if (btnXrayModeLen) {
+  btnXrayModeLen.addEventListener('click', () => {
+    audioSynth.playTone(500, 'sine', 0.05);
+    liveCodeXray.setAttribute('mode', 'len');
+    syncXRay();
+  });
+}
+
+if (btnRunMeter) {
+  btnRunMeter.addEventListener('click', () => {
+    const text = xrayInputVal.value || 'Bunga Matahari';
+    xrayMeterTapeDisplay.style.display = 'flex';
+    xrayMeterTapeDisplay.innerHTML = '';
+
+    // Otomatis ubah mode X-Ray ke mode len (inside-out)
+    liveCodeXray.setAttribute('mode', 'len');
+    syncXRay();
+
+    // Animasi meteran meluncur per huruf dengan audio tick
+    for (let i = 0; i < text.length; i++) {
+      setTimeout(() => {
+        audioSynth.playTone(400 + (i * 20), 'triangle', 0.04, 0.06);
+        const unit = document.createElement('div');
+        unit.className = 'meter-unit';
+        unit.innerHTML = `<span>#${i + 1}</span><span style="font-size: 11px; font-weight: 900;">${text[i] === ' ' ? '·' : text[i]}</span>`;
+        xrayMeterTapeDisplay.appendChild(unit);
+
+        if (i === text.length - 1) {
+          setTimeout(() => {
+            audioSynth.playPreset('success');
+            const total = document.createElement('div');
+            total.style.background = '#10b981';
+            total.style.color = '#020617';
+            total.style.padding = '0.25rem 0.65rem';
+            total.style.borderRadius = '6px';
+            total.style.fontSize = '0.9rem';
+            total.style.fontWeight = '900';
+            total.textContent = `TOTAL: ${text.length}`;
+            xrayMeterTapeDisplay.appendChild(total);
+          }, 100);
+        }
+      }, i * 40);
+    }
+  });
+}
+
+// ==========================================
 // 2. TAB 1: GERBONG INDEKS & LEN()
 // ==========================================
 const inputStr1 = document.getElementById('input-string-1');
@@ -244,5 +348,6 @@ function renderSwitches() {
 }
 
 // Inisialisasi Pertama
+syncXRay();
 renderTrain();
 renderSwitches();

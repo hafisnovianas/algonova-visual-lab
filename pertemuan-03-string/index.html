@@ -19,7 +19,11 @@
 
     <!-- Navigation Tabs -->
     <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="tab-index">
+      <button class="tab-btn active" data-tab="tab-xray">
+        <span style="font-size: 1.25rem;">🔬</span>
+        <span>0. Bedah Kode</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-index">
         <span style="font-size: 1.25rem;">🚂</span>
         <span>1. Gerbong Indeks</span>
       </button>
@@ -41,8 +45,118 @@
       </button>
     </nav>
 
+    <!-- TAB 0: BEDAH KODE (X-RAY & JEMBATAN SINTAKS) -->
+    <section id="tab-xray" class="tab-content active">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-amber);">
+              <span>🔬</span> Stasiun 0: Bedah Anatomi Kode & Variabel (X-Ray)
+            </h2>
+            <p class="card-subtitle">Menghubungkan teks kode Python ke benda fisik: Peti, Tangan Robot (=), dan Meteran len()</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <sound-button class="badge badge-amber" id="btn-xray-mode-assign" style="font-weight: 800;">Pola 1: Peti (=)</sound-button>
+            <sound-button class="badge badge-emerald" id="btn-xray-mode-len" style="font-weight: 800;">Pola 2: Meteran len()</sound-button>
+          </div>
+        </div>
+
+        <!-- Simulator Interaktif Fisik Peti & Meteran -->
+        <div style="display: flex; flex-direction: column; gap: 1rem; background: rgba(2, 6, 23, 0.6); padding: 1.25rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+          
+          <!-- Kontrol Input & Tombol Aksi -->
+          <div class="grid-2">
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">🏷️ Stiker Nama Peti (Variabel):</label>
+              <input type="text" id="xray-input-var" value="masukan" class="input-text" style="font-family: var(--font-mono); color: #93c5fd;">
+            </div>
+            <div>
+              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">📝 Isi Tulisan Manusia:</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="xray-input-val" value="Bunga Matahari" class="input-text" style="font-family: var(--font-mono); color: #a7f3d0;">
+                <sound-button id="btn-xray-insert" class="badge badge-amber" style="padding: 0.75rem 1rem; font-weight: 800; white-space: nowrap;">
+                  Simpan (=)
+                </sound-button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Meja Praktik Fisik -->
+          <div style="
+            background: #020617;
+            border: 2px dashed #334155;
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+            min-height: 180px;
+            justify-content: center;
+            position: relative;
+          ">
+            <!-- Peti Fisik -->
+            <div id="xray-chest-visual" style="
+              width: 100%;
+              max-width: 450px;
+              background: linear-gradient(135deg, #1e293b, #0f172a);
+              border: 3px solid #3b82f6;
+              border-radius: 16px;
+              padding: 1.25rem;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 0.75rem;
+              box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+              transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            ">
+              <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                <span style="font-size: 0.7rem; font-weight: 800; background: #3b82f6; color: white; padding: 0.2rem 0.6rem; border-radius: 9999px;">
+                  📦 PETI MEMORI
+                </span>
+                <span id="xray-chest-label" style="font-family: var(--font-mono); font-size: 1rem; font-weight: 900; color: #93c5fd;">
+                  masukan
+                </span>
+              </div>
+
+              <!-- Isi Peti (Kertas Tulisan Ber-Helm) -->
+              <div id="xray-chest-content" style="
+                background: rgba(16, 185, 129, 0.2);
+                border: 2px solid #10b981;
+                border-radius: 10px;
+                padding: 0.6rem 1.25rem;
+                font-family: var(--font-mono);
+                font-size: 1.15rem;
+                font-weight: 800;
+                color: #a7f3d0;
+                text-align: center;
+                width: 100%;
+                word-break: break-all;
+              ">
+                "Bunga Matahari"
+              </div>
+            </div>
+
+            <!-- Pita Meteran len() -->
+            <div id="xray-meter-zone" style="width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+              <sound-button id="btn-run-meter" class="badge badge-emerald" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; font-weight: 800; cursor: pointer;">
+                📏 Tarik Meteran len()
+              </sound-button>
+              <div id="xray-meter-tape-display" class="meter-tape" style="display: none; width: 100%; justify-content: center;">
+                <!-- Roda meteran diisi JS -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Web Component: Bedah Anatomi Teks Kode -->
+        <code-xray id="live-code-xray" mode="assign" var-name="masukan" str-val="Bunga Matahari" target-var="panjang"></code-xray>
+      </div>
+    </section>
+
     <!-- TAB 1: GERBONG INDEKS & LEN() -->
-    <section id="tab-index" class="tab-content active">
+    <section id="tab-index" class="tab-content">
       <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
         <div class="card-header">
           <div>
