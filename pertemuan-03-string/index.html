@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pertemuan 3: String & Interpreter - Algo Visual Lab</title>
+  <title>Pertemuan 3: String & Interpreter (Code-as-Widget) - Algo Visual Lab</title>
   <link rel="stylesheet" href="../shared/css/style.css">
   <script type="module" src="../shared/components/index.js"></script>
 </head>
@@ -14,330 +14,394 @@
     <lesson-header 
       lesson="3" 
       title="Gerbong String & Interpreter" 
-      subtitle="Stasiun Praktik Indeks, Pisau Slicing, Detektif .find(), dan Saklar Biner">
+      subtitle="Laboratorium Kode Interaktif: Setiap baris sintaks Python adalah alat peraga hidup!">
     </lesson-header>
 
-    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs: 5 Operasi Sintaks Terpadu -->
     <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="tab-xray">
-        <span style="font-size: 1.25rem;">🔬</span>
-        <span>0. Bedah Kode</span>
+      <button class="tab-btn active" data-tab="tab-declare">
+        <span style="font-size: 1.25rem;">📦</span>
+        <span>1. Variabel & len()</span>
       </button>
       <button class="tab-btn" data-tab="tab-index">
-        <span style="font-size: 1.25rem;">🚂</span>
-        <span>1. Gerbong Indeks</span>
+        <span style="font-size: 1.25rem;">🎯</span>
+        <span>2. Indeks [ i ]</span>
       </button>
       <button class="tab-btn" data-tab="tab-slice">
         <span style="font-size: 1.25rem;">✂️</span>
-        <span>2. Pisau Slicing</span>
+        <span>3. Slicing [ a : b ]</span>
       </button>
       <button class="tab-btn" data-tab="tab-find">
         <span style="font-size: 1.25rem;">🔍</span>
-        <span>3. Detektif .find()</span>
+        <span>4. Detektif .find()</span>
       </button>
       <button class="tab-btn" data-tab="tab-types">
         <span style="font-size: 1.25rem;">🤖</span>
-        <span>4. Mesin str vs int</span>
-      </button>
-      <button class="tab-btn" data-tab="tab-biner">
-        <span style="font-size: 1.25rem;">🧠</span>
-        <span>5. Saklar Biner</span>
+        <span>5. str() & Saklar Biner</span>
       </button>
     </nav>
 
-    <!-- TAB 0: BEDAH KODE (X-RAY & JEMBATAN SINTAKS) -->
-    <section id="tab-xray" class="tab-content active">
+    <!-- ===================================================================
+         TAB 1: DEKLARASI VARIABEL & METERAN LEN()
+         =================================================================== -->
+    <section id="tab-declare" class="tab-content active">
       <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
         <div class="card-header">
           <div>
             <h2 class="card-title" style="color: var(--accent-amber);">
-              <span>🔬</span> Stasiun 0: Bedah Anatomi Kode & Variabel (X-Ray)
+              <span>📦</span> Operasi 1: Menyimpan Teks & Mengukur Panjang
             </h2>
-            <p class="card-subtitle">Menghubungkan teks kode Python ke benda fisik: Peti, Tangan Robot (=), dan Meteran len()</p>
+            <p class="card-subtitle">Peti memori menyimpan kata berhelm <code>""</code>, lalu <code>len()</code> menghitung total karakternya.</p>
           </div>
           <div style="display: flex; gap: 0.5rem;">
-            <sound-button class="badge badge-amber" id="btn-xray-mode-assign" style="font-weight: 800;">Pola 1: Peti (=)</sound-button>
-            <sound-button class="badge badge-emerald" id="btn-xray-mode-len" style="font-weight: 800;">Pola 2: Meteran len()</sound-button>
+            <sound-button class="badge badge-amber" id="preset-declare-sunflower">🌻 Bunga Matahari</sound-button>
+            <sound-button class="badge badge-sky" id="preset-declare-kate">👫 Kate dan Jim</sound-button>
           </div>
         </div>
 
-        <!-- Simulator Interaktif Fisik Peti & Meteran -->
-        <div style="display: flex; flex-direction: column; gap: 1rem; background: rgba(2, 6, 23, 0.6); padding: 1.25rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+        <!-- Misi Cepat Algonova (Task 51172 L5) -->
+        <div class="mission-card" id="mission-declare-box">
+          <div class="mission-title">
+            <span>🎯</span>
+            <span><b>Tantangan Tutor:</b> Ukur panjang teks <code>"Bunga Matahari"</code> (Task 51172 Level 5)</span>
+          </div>
+          <span class="mission-badge mission-badge-pending" id="badge-mission-declare">
+            <span>⏳</span> <span>Belum Diukur</span>
+          </span>
+        </div>
+
+        <!-- CODE-AS-WIDGET: Sintaks Live & Manipulator Inline -->
+        <div class="code-widget-container">
           
-          <!-- Kontrol Input & Tombol Aksi -->
-          <div class="grid-2">
-            <div>
-              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">🏷️ Stiker Nama Peti (Variabel):</label>
-              <input type="text" id="xray-input-var" value="masukan" class="input-text" style="font-family: var(--font-mono); color: #93c5fd;">
-            </div>
-            <div>
-              <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">📝 Isi Tulisan Manusia:</label>
-              <div style="display: flex; gap: 0.5rem;">
-                <input type="text" id="xray-input-val" value="Bunga Matahari" class="input-text" style="font-family: var(--font-mono); color: #a7f3d0;">
-                <sound-button id="btn-xray-insert" class="badge badge-amber" style="padding: 0.75rem 1rem; font-weight: 800; white-space: nowrap;">
-                  Simpan (=)
-                </sound-button>
-              </div>
-            </div>
+          <!-- Baris 1: Peti = "Teks" -->
+          <div class="code-line">
+            <span class="token-var" id="token-var-name" title="Klik untuk penjelasan peran peti">masukan</span>
+            <span class="token-op">=</span>
+            <span class="token-str">"</span><input type="text" id="input-declare-val" value="Bunga Matahari" class="inline-code-input" style="min-width: 200px;"><span class="token-str">"</span>
+            <span style="font-size: 0.75rem; color: var(--text-secondary); margin-left: auto;"># Ketik langsung di dalam tanda kutip!</span>
           </div>
 
-          <!-- Meja Praktik Fisik -->
-          <div style="
-            background: #020617;
-            border: 2px dashed #334155;
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.25rem;
-            min-height: 180px;
-            justify-content: center;
-            position: relative;
-          ">
-            <!-- Peti Fisik -->
-            <div id="xray-chest-visual" style="
-              width: 100%;
-              max-width: 450px;
-              background: linear-gradient(135deg, #1e293b, #0f172a);
-              border: 3px solid #3b82f6;
-              border-radius: 16px;
-              padding: 1.25rem;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              gap: 0.75rem;
-              box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-              transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            ">
-              <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-                <span style="font-size: 0.7rem; font-weight: 800; background: #3b82f6; color: white; padding: 0.2rem 0.6rem; border-radius: 9999px;">
-                  📦 PETI MEMORI
-                </span>
-                <span id="xray-chest-label" style="font-family: var(--font-mono); font-size: 1rem; font-weight: 900; color: #93c5fd;">
-                  masukan
-                </span>
-              </div>
+          <!-- Baris 2: panjang = len(peti) -->
+          <div class="code-line" style="margin-top: 0.5rem;">
+            <span class="token-var">panjang</span>
+            <span class="token-op">=</span>
+            <span class="token-func">len</span><span style="color: #10b981; font-weight: 900;">(</span>
+            <span class="token-var" id="token-len-arg">masukan</span>
+            <span style="color: #10b981; font-weight: 900;">)</span>
+            
+            <sound-button class="badge badge-emerald" id="btn-pull-meter" style="margin-left: 0.5rem; cursor: pointer; padding: 0.35rem 0.75rem;">
+              📏 Tarik Meteran len()
+            </sound-button>
 
-              <!-- Isi Peti (Kertas Tulisan Ber-Helm) -->
-              <div id="xray-chest-content" style="
-                background: rgba(16, 185, 129, 0.2);
-                border: 2px solid #10b981;
-                border-radius: 10px;
-                padding: 0.6rem 1.25rem;
-                font-family: var(--font-mono);
-                font-size: 1.15rem;
-                font-weight: 800;
-                color: #a7f3d0;
-                text-align: center;
-                width: 100%;
-                word-break: break-all;
-              ">
-                "Bunga Matahari"
-              </div>
-            </div>
-
-            <!-- Pita Meteran len() -->
-            <div id="xray-meter-zone" style="width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
-              <sound-button id="btn-run-meter" class="badge badge-emerald" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; font-weight: 800; cursor: pointer;">
-                📏 Tarik Meteran len()
-              </sound-button>
-              <div id="xray-meter-tape-display" class="meter-tape" style="display: none; width: 100%; justify-content: center;">
-                <!-- Roda meteran diisi JS -->
-              </div>
-            </div>
+            <span style="margin-left: auto; font-size: 1.1rem; font-weight: 900; color: var(--accent-emerald);">
+              &rarr; <span id="label-declare-result" class="result-jump">14</span>
+            </span>
           </div>
 
         </div>
 
-        <!-- Web Component: Bedah Anatomi Teks Kode -->
-        <code-xray id="live-code-xray" mode="assign" var-name="masukan" str-val="Bunga Matahari" target-var="panjang"></code-xray>
+        <!-- Pita Visual Meteran Meluncur -->
+        <div id="declare-meter-tape" class="meter-tape" style="display: flex; min-height: 48px; justify-content: center; overflow-x: auto;">
+          <!-- Kotak meteran diisi dinamis JS -->
+        </div>
+
+        <!-- Catatan Pedagogi Interaktif (Inside-Out) -->
+        <div class="code-banner">
+          <div>
+            <div class="code-title">💡 Rahasia Python Inside-Out:</div>
+            <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 0.25rem;">
+              Komputer membaca dari kurung terdalam: <b>1. Buka peti <code>masukan</code></b> &rarr; <b>2. Hitung jumlah huruf dengan <code>len()</code></b> &rarr; <b>3. Simpan hasilnya (14) ke peti <code>panjang</code></b>.
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
-    <!-- TAB 1: GERBONG INDEKS & LEN() -->
+    <!-- ===================================================================
+         TAB 2: GERBONG INDEKS [ i ]
+         =================================================================== -->
     <section id="tab-index" class="tab-content">
       <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
         <div class="card-header">
           <div>
             <h2 class="card-title" style="color: var(--accent-amber);">
-              <span>🚂</span> Stasiun 1: Konsep Roda Indeks & len()
+              <span>🎯</span> Operasi 2: Memanggil Karakter dengan Nomor Roda <code>[ i ]</code>
             </h2>
-            <p class="card-subtitle">Komputer selalu mulai menghitung nomor roda dari angka 0, bukan 1!</p>
+            <p class="card-subtitle">Komputer selalu mulai memberi nomor dari angka <b>0</b>, bukan 1!</p>
           </div>
-          <div style="text-align: right;">
-            <span style="font-size: 0.8rem; color: var(--text-secondary);">Total Panjang:</span>
-            <span id="label-len" style="font-size: 1.35rem; font-weight: 900; color: var(--accent-emerald); font-family: var(--font-mono); margin-left: 0.25rem;">0</span>
-          </div>
-        </div>
-
-        <!-- Input Kata & Preset Cepat -->
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <label style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">
-            Ketik kata di bawah atau pilih tombol cepat:
-          </label>
-          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-            <input type="text" id="input-string-1" value="Bunga Matahari" class="input-text" style="flex: 1; min-width: 220px;" placeholder="Ketik kata apa saja...">
-            <sound-button class="badge badge-amber" style="padding: 0.6rem 0.85rem;" data-preset="Bunga Matahari">Bunga Matahari</sound-button>
-            <sound-button class="badge badge-amber" style="padding: 0.6rem 0.85rem;" data-preset="Kate dan Jim">Kate dan Jim</sound-button>
-            <sound-button class="badge badge-amber" style="padding: 0.6rem 0.85rem;" data-preset="Minecraft">Minecraft</sound-button>
-            <sound-button class="badge badge-amber" style="padding: 0.6rem 0.85rem;" data-preset="Roblox">Roblox</sound-button>
+          <div style="display: flex; gap: 0.5rem;">
+            <sound-button class="badge badge-amber" id="preset-index-sunflower">🌻 Bunga Matahari</sound-button>
+            <sound-button class="badge badge-sky" id="preset-index-kate">👫 Kate dan Jim</sound-button>
           </div>
         </div>
 
-        <!-- Wadah Rel Kereta (Train Track) -->
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600;">
-            Rel Gerbong String (Klik tiap huruf untuk mendengarkan bunyinya):
+        <!-- Misi Cepat Algonova (Task 51172 L6) -->
+        <div class="mission-card" id="mission-index-box">
+          <div class="mission-title">
+            <span>🎯</span>
+            <span id="mission-index-desc"><b>Misi Algonova (L6):</b> Ambil huruf awal kata 'Matahari' (huruf <code>'M'</code> pada roda <b>6</b>)!</span>
+          </div>
+          <span class="mission-badge mission-badge-pending" id="badge-mission-index">
+            <span>⏳</span> <span>Cari Roda 6</span>
           </span>
-          <div id="train-container" class="train-track">
-            <!-- Gerbong <train-car> dirender via script.js -->
+        </div>
+
+        <!-- Rel Gerbong Kereta Interaktif -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 700;">
+              REL GERBONG STRING (Klik salah satu roda gerbong atau gunakan tombol kode di bawah):
+            </span>
+            <span style="font-size: 0.75rem; color: var(--accent-emerald); font-weight: 700;">
+              Total: <span id="label-index-len">14</span> Roda (0 sampai 13)
+            </span>
+          </div>
+          <div id="index-train-track" class="train-track">
+            <!-- Train cars dirender via script.js -->
           </div>
         </div>
 
-        <!-- Live Code Feedback -->
-        <div class="code-banner">
-          <div>
-            <div class="code-title">Kode Python:</div>
-            <div id="live-code-index" class="code-val" style="color: var(--accent-emerald);">teks = "Bunga Matahari"</div>
-          </div>
-          <div>
-            <div class="code-title">Hasil len(teks):</div>
-            <div id="live-result-len" class="code-val" style="color: var(--accent-amber);">len(teks) &rarr; 14</div>
-          </div>
-          <div>
-            <div class="code-title">Huruf Pertama teks[0]:</div>
-            <div id="live-result-first" class="code-val" style="color: var(--accent-sky);">teks[0] &rarr; 'B'</div>
+        <!-- CODE-AS-WIDGET: Sintaks Live dengan Inline Stepper -->
+        <div class="code-widget-container">
+          <div class="code-line">
+            <span class="token-var">huruf</span>
+            <span class="token-op">=</span>
+            <span class="token-var">masukan</span><span style="color: #f59e0b; font-weight: 900; font-size: 1.3rem;">[</span>
+            
+            <!-- Inline Stepper di dalam Kurung Siku Kode -->
+            <div class="inline-stepper">
+              <button class="inline-stepper-btn" id="btn-index-dec" title="Kurangi indeks">-</button>
+              <span class="inline-stepper-val" id="val-index-stepper">0</span>
+              <button class="inline-stepper-btn" id="btn-index-inc" title="Tambah indeks">+</button>
+            </div>
+            
+            <span style="color: #f59e0b; font-weight: 900; font-size: 1.3rem;">]</span>
+
+            <!-- Hasil Terpilih yang Melompat -->
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; color: var(--text-secondary);">Karakter Terambil:</span>
+              <span id="label-index-char-result" class="result-jump" style="font-size: 1.4rem; font-weight: 900; color: var(--accent-amber); background: #020617; border: 2px solid var(--accent-amber); padding: 0.1rem 0.6rem; border-radius: 8px;">
+                'B'
+              </span>
+            </div>
           </div>
         </div>
+
+        <!-- Slider Cepat Tambahan -->
+        <div style="display: flex; align-items: center; gap: 1rem; background: rgba(2, 6, 23, 0.5); padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #334155;">
+          <span style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">⚡ Geser Cepat Roda:</span>
+          <input type="range" id="slider-index-range" min="0" max="13" value="0" style="flex: 1;">
+          <span id="slider-index-val-label" style="font-family: var(--font-mono); font-weight: 800; color: var(--accent-amber); min-width: 24px; text-align: right;">0</span>
+        </div>
+
       </div>
     </section>
 
-    <!-- TAB 2: PISAU SLICING -->
+    <!-- ===================================================================
+         TAB 3: PISAU SLICING [ a : b ]
+         =================================================================== -->
     <section id="tab-slice" class="tab-content">
       <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
         <div class="card-header">
           <div>
             <h2 class="card-title" style="color: var(--accent-sky);">
-              <span>✂️</span> Stasiun 2: Pisau Pemotong (Slicing)
+              <span>✂️</span> Operasi 3: Pisau Pemotong Kata (Slicing)
             </h2>
-            <p class="card-subtitle">Rumus: <code>teks[MULAI : SEBELUM_AKHIR]</code> &bull; Indeks akhir TIDAK diikutkan!</p>
+            <p class="card-subtitle">Rumus: <code>teks[MULAI : SEBELUM_AKHIR]</code> &bull; Indeks akhir <b>TIDAK</b> diikutkan!</p>
           </div>
           <div style="display: flex; gap: 0.5rem;">
-            <sound-button class="badge badge-amber" id="preset-slice-kate">Potong 'Kate' [0:4]</sound-button>
-            <sound-button class="badge badge-amber" id="preset-slice-jim">Potong 'Jim' [9:12]</sound-button>
+            <sound-button class="badge badge-amber" id="preset-slice-sunflower">🌻 Potong 'Matahari' [6:14]</sound-button>
+            <sound-button class="badge badge-sky" id="preset-slice-kate">👫 Potong 'Kate' [0:4]</sound-button>
+            <sound-button class="badge badge-emerald" id="preset-slice-jim">Potong 'Jim' [9:12]</sound-button>
           </div>
         </div>
 
-        <!-- Sliders -->
+        <!-- Misi Cepat Algonova (Task 51172 L7 & Task 51173 L7) -->
+        <div class="mission-card" id="mission-slice-box">
+          <div class="mission-title">
+            <span>🎯</span>
+            <span id="mission-slice-desc"><b>Misi Algonova:</b> Potong kata <code>"Matahari"</code> dari <code>"Bunga Matahari"</code> (atur pisau ke <b>[ 6 : 14 ]</b>)!</span>
+          </div>
+          <span class="mission-badge mission-badge-pending" id="badge-mission-slice">
+            <span>⏳</span> <span>Belum Tepat</span>
+          </span>
+        </div>
+
+        <!-- Rel Gerbong Slicing -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 700;">
+            GERBONG TERPOTONG (Gerbong dalam jangkauan pisau menyala terang):
+          </span>
+          <div id="slice-train-track" class="train-track">
+            <!-- Train cars slicing dirender via script.js -->
+          </div>
+        </div>
+
+        <!-- CODE-AS-WIDGET: Sintaks Live dengan Inline Steppers Ganda [ start : stop ] -->
+        <div class="code-widget-container">
+          <div class="code-line">
+            <span class="token-var">potongan</span>
+            <span class="token-op">=</span>
+            <span class="token-var">masukan</span><span style="color: #0ea5e9; font-weight: 900; font-size: 1.3rem;">[</span>
+            
+            <!-- Inline Stepper Start -->
+            <div class="inline-stepper" style="border-color: var(--accent-emerald);">
+              <button class="inline-stepper-btn" id="btn-slice-start-dec">-</button>
+              <span class="inline-stepper-val" id="val-slice-start" style="color: #a7f3d0;">6</span>
+              <button class="inline-stepper-btn" id="btn-slice-start-inc">+</button>
+            </div>
+
+            <span style="color: #0ea5e9; font-weight: 900; font-size: 1.3rem;">:</span>
+
+            <!-- Inline Stepper Stop -->
+            <div class="inline-stepper" style="border-color: var(--accent-rose);">
+              <button class="inline-stepper-btn" id="btn-slice-stop-dec">-</button>
+              <span class="inline-stepper-val" id="val-slice-stop" style="color: #fca5a5;">14</span>
+              <button class="inline-stepper-btn" id="btn-slice-stop-inc">+</button>
+            </div>
+
+            <span style="color: #0ea5e9; font-weight: 900; font-size: 1.3rem;">]</span>
+
+            <!-- Hasil Potongan Teks -->
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; color: var(--text-secondary);">Hasil Potongan:</span>
+              <span id="label-slice-result" class="result-jump" style="font-size: 1.35rem; font-weight: 900; color: var(--accent-amber); background: #020617; border: 2px solid var(--accent-amber); padding: 0.15rem 0.75rem; border-radius: 8px;">
+                "Matahari"
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sliders Kontrol Cepat -->
         <div class="grid-2">
           <div class="slider-group">
             <div class="slider-label">
-              <span style="color: var(--accent-emerald);">Titik Mulai (Start): <code id="val-slice-start" style="font-size: 1rem;">0</code></span>
-              <span style="color: var(--text-secondary);">Mulai dari huruf ke-</span>
+              <span style="color: var(--accent-emerald);">Mulai (Start): <code id="label-slider-start">6</code></span>
+              <span style="color: var(--text-secondary);">Diikutkan</span>
             </div>
-            <input type="range" id="slider-start" min="0" max="14" value="0">
+            <input type="range" id="slider-slice-start" min="0" max="14" value="6">
           </div>
           <div class="slider-group">
             <div class="slider-label">
-              <span style="color: var(--accent-rose);">Titik Berhenti (Stop): <code id="val-slice-end" style="font-size: 1rem;">4</code></span>
-              <span style="color: var(--text-secondary);">Berhenti sebelum huruf ke-</span>
+              <span style="color: var(--accent-rose);">Berhenti (Stop): <code id="label-slider-stop">14</code></span>
+              <span style="color: var(--text-secondary);">TIDAK diikutkan</span>
             </div>
-            <input type="range" id="slider-end" min="0" max="14" value="4">
+            <input type="range" id="slider-slice-stop" min="0" max="14" value="14">
           </div>
         </div>
 
-        <!-- Rel Slicing -->
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600;">
-            Balok yang Berhasil Dipotong (Menyala Emas):
-          </span>
-          <div id="slice-container" class="train-track">
-            <!-- Gerbong slicing dirender via script.js -->
-          </div>
-        </div>
-
-        <!-- Hasil Slicing -->
-        <div class="code-banner">
-          <div>
-            <div class="code-title">Sintaks Python:</div>
-            <div id="slice-code-syntax" class="code-val" style="color: var(--accent-sky);">potongan = teks[0:4]</div>
-          </div>
-          <div style="text-align: right;">
-            <div class="code-title">Hasil Teks:</div>
-            <div id="slice-result-output" class="code-val" style="font-size: 1.35rem; color: var(--accent-amber);">"Kate"</div>
-          </div>
-        </div>
       </div>
     </section>
 
-    <!-- TAB 3: DETEKTIF FIND -->
+    <!-- ===================================================================
+         TAB 4: DETEKTIF PENCARIAN .FIND()
+         =================================================================== -->
     <section id="tab-find" class="tab-content">
       <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
         <div class="card-header">
           <div>
             <h2 class="card-title" style="color: var(--accent-violet);">
-              <span>🔍</span> Stasiun 3: Detektif Pencari Kata (.find)
+              <span>🔍</span> Operasi 4: Detektif Pencari Kata (<code>.find()</code>)
             </h2>
-            <p class="card-subtitle">Jika ketemu: komputer memberi <b>nomor indeks awalnya</b>. Jika TIDAK ada: hasilnya mutlak <b>-1</b>!</p>
+            <p class="card-subtitle">Jika ketemu: indeks huruf awal. Jika <b>TIDAK</b> ketemu: mutlak <b>-1</b>!</p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <sound-button class="badge badge-amber" data-find-preset="Hotel">Cari 'Hotel' (0)</sound-button>
+            <sound-button class="badge badge-emerald" data-find-preset="indah">Cari 'indah' (34)</sound-button>
+            <sound-button class="badge badge-rose" data-find-preset="pizza">Cari 'pizza' (-1)</sound-button>
           </div>
         </div>
 
-        <div class="grid-2">
-          <div>
-            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">Kalimat Sumber:</label>
-            <input type="text" id="find-source" value="Hotel ini luar biasa! Pantai yang indah!" class="input-text" style="font-family: var(--font-mono); font-size: 0.9rem;">
+        <!-- Misi Cepat Algonova (Task 51172 L8) -->
+        <div class="mission-card" id="mission-find-box">
+          <div class="mission-title">
+            <span>🎯</span>
+            <span id="mission-find-desc"><b>Misi Algonova (L8):</b> Deteksi posisi kata <code>"indah"</code> pada ulasan hotel!</span>
           </div>
-          <div>
-            <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">Kata yang Dicari:</label>
-            <div style="display: flex; gap: 0.5rem;">
-              <input type="text" id="find-query" value="indah" class="input-text" style="font-family: var(--font-mono); font-weight: 700; color: var(--accent-violet);">
-              <sound-button id="btn-run-find" class="badge badge-amber" style="padding: 0.75rem 1.25rem; font-weight: 800;">CARI</sound-button>
+          <span class="mission-badge mission-badge-pending" id="badge-mission-find">
+            <span>⏳</span> <span>Jalankan Scan</span>
+          </span>
+        </div>
+
+        <!-- Teks Sumber Kalimat -->
+        <div>
+          <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">Kalimat Sumber yang Diperiksa:</label>
+          <input type="text" id="find-source-input" value="Hotel ini luar biasa! Pantai yang indah!" class="input-text" style="font-family: var(--font-mono); font-size: 0.95rem;">
+        </div>
+
+        <!-- CODE-AS-WIDGET: Sintaks Live dengan Inline Input Query -->
+        <div class="code-widget-container">
+          <div class="code-line">
+            <span class="token-var">posisi</span>
+            <span class="token-op">=</span>
+            <span class="token-var">kalimat</span><span style="color: #a78bfa; font-weight: 900;">.find(</span>
+            <span class="token-str">"</span><input type="text" id="find-query-input" value="indah" class="inline-code-input" style="min-width: 130px; border-color: var(--accent-violet); color: #c4b5fd;"><span class="token-str">"</span>
+            <span style="color: #a78bfa; font-weight: 900;">)</span>
+
+            <sound-button class="badge badge-amber" id="btn-scan-find" style="margin-left: 0.5rem; cursor: pointer; padding: 0.35rem 0.85rem;">
+              🔍 Pindai Teks
+            </sound-button>
+
+            <!-- Hasil Indeks Pencarian -->
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; color: var(--text-secondary);">Hasil:</span>
+              <span id="find-res-val" class="result-jump" style="font-size: 1.35rem; font-weight: 900; color: var(--accent-emerald); background: #020617; border: 2px solid var(--accent-emerald); padding: 0.15rem 0.65rem; border-radius: 8px;">
+                33
+              </span>
             </div>
           </div>
-        </div>
 
-        <!-- Preset Cari Cepat -->
-        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-          <span style="font-size: 0.75rem; color: var(--text-secondary);">Tes Cepat:</span>
-          <sound-button class="badge badge-amber" data-find-preset="Hotel">Cari 'Hotel' (ada di 0)</sound-button>
-          <sound-button class="badge badge-amber" data-find-preset="indah">Cari 'indah' (ada di 33)</sound-button>
-          <sound-button class="badge badge-rose" data-find-preset="pizza">Cari 'pizza' (Nggak ada = -1)</sound-button>
-        </div>
+          <!-- Baris Operator 'in' -->
+          <div class="code-line" style="margin-top: 0.25rem;">
+            <span class="token-var">ada</span>
+            <span class="token-op">=</span>
+            <span class="token-str">"<span id="label-find-in-word">indah</span>"</span>
+            <span class="token-op" style="color: #38bdf8;">in</span>
+            <span class="token-var">kalimat</span>
 
-        <!-- Radar Visual -->
-        <div id="find-radar" class="train-track" style="gap: 0.35rem;">
-          <!-- Radar karakter dirender JS -->
-        </div>
-
-        <!-- Hasil Pencarian -->
-        <div class="grid-2">
-          <div class="code-banner">
-            <span style="font-size: 0.8rem; color: var(--text-secondary);">Kode: <code>teks.find('<span id="find-word-label">indah</span>')</code></span>
-            <div id="find-res-badge" class="badge badge-emerald" style="font-size: 0.9rem; padding: 0.35rem 0.75rem;">Hasil: 33</div>
-          </div>
-          <div class="code-banner">
-            <span style="font-size: 0.8rem; color: var(--text-secondary);">Operator: <code>'kata' in teks</code></span>
-            <div id="find-bool-badge" class="badge badge-emerald" style="font-size: 0.9rem; padding: 0.35rem 0.75rem;">True (Ada!)</div>
+            <span style="margin-left: auto; font-size: 1.1rem; font-weight: 900;" id="find-bool-val" class="badge badge-emerald">
+              True (Ada!)
+            </span>
           </div>
         </div>
+
+        <!-- Visual Radar Pemindaian -->
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 700;">
+            RADAR PEMINDAIAN KARAKTER:
+          </span>
+          <div id="find-radar-track" class="train-track" style="gap: 0.35rem;">
+            <!-- Radar blocks dirender via JS -->
+          </div>
+        </div>
+
       </div>
     </section>
 
-    <!-- TAB 4: MESIN STR VS INT -->
+    <!-- ===================================================================
+         TAB 5: MESIN TIPE DATA STR() & SAKLAR BINER
+         =================================================================== -->
     <section id="tab-types" class="tab-content">
-      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
         <div class="card-header">
           <div>
             <h2 class="card-title" style="color: var(--accent-rose);">
-              <span>🤖</span> Stasiun 4: Laboratorium Tipe Data (str vs int)
+              <span>🤖</span> Operasi 5: Laboratorium Tipe Data (<code>str()</code>) & Saklar Biner
             </h2>
-            <p class="card-subtitle">Melihat langsung perbedaan operator <code>+</code> pada Angka vs Teks!</p>
+            <p class="card-subtitle">Perbedaan operator <code>+</code> pada Angka vs Teks, serta bagaimana komputer menerjemahkannya ke listrik.</p>
           </div>
         </div>
 
-        <!-- 3 Mesin -->
+        <!-- 3 Mesin Komparasi Operator + -->
         <div class="grid-3">
+          
+          <!-- Mesin 1: int + int -->
           <div class="card" style="background: rgba(2, 6, 23, 0.6); border-color: rgba(16, 185, 129, 0.4);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
               <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-emerald);">1. MESIN MATEMATIKA</span>
@@ -346,12 +410,13 @@
             <div style="background: var(--bg-input); padding: 0.75rem; text-align: center; border-radius: 8px; font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--accent-emerald);">
               5 + 5
             </div>
-            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">Keduanya angka murni, jadi dijumlahkan.</p>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">Angka murni &rarr; Dijumlahkan:</p>
             <div style="background: rgba(16, 185, 129, 0.15); padding: 0.5rem; text-align: center; border-radius: 8px;">
               <span style="font-size: 1.5rem; font-weight: 900; color: var(--accent-emerald); font-family: var(--font-mono);">10</span>
             </div>
           </div>
 
+          <!-- Mesin 2: str + str -->
           <div class="card" style="background: rgba(2, 6, 23, 0.6); border-color: rgba(245, 158, 11, 0.4);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
               <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-amber);">2. MESIN GANDENG TEKS</span>
@@ -360,12 +425,13 @@
             <div style="background: var(--bg-input); padding: 0.75rem; text-align: center; border-radius: 8px; font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--accent-amber);">
               "5" + "5"
             </div>
-            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">Ada tanda kutip, digandeng seperti gerbong.</p>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">Pakai helm kutip &rarr; Digandeng:</p>
             <div style="background: rgba(245, 158, 11, 0.15); padding: 0.5rem; text-align: center; border-radius: 8px;">
               <span style="font-size: 1.5rem; font-weight: 900; color: var(--accent-amber); font-family: var(--font-mono);">"55"</span>
             </div>
           </div>
 
+          <!-- Mesin 3: str + int (Bahaya TypeError) -->
           <div class="card" style="background: rgba(2, 6, 23, 0.6); border-color: rgba(244, 63, 94, 0.4);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
               <span style="font-size: 0.75rem; font-weight: 700; color: var(--accent-rose);">3. TOMBOL BAHAYA</span>
@@ -374,80 +440,61 @@
             <div style="background: var(--bg-input); padding: 0.75rem; text-align: center; border-radius: 8px; font-family: var(--font-mono); font-size: 1.2rem; font-weight: 700; color: var(--accent-rose);">
               "Umur: " + 15
             </div>
-            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">Komputer bingung! Mau hitung atau gandeng?</p>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0.5rem 0;">Komputer bingung!</p>
             <div style="background: rgba(244, 63, 94, 0.15); padding: 0.5rem; text-align: center; border-radius: 8px;">
               <span style="font-size: 1.1rem; font-weight: 900; color: var(--accent-rose); font-family: var(--font-mono);">💥 TypeError!</span>
             </div>
           </div>
+
         </div>
 
-        <!-- Simulator Ubah str() -->
-        <div class="card" style="background: rgba(2, 6, 23, 0.8);">
-          <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: #cbd5e1;">Mantra Ajaib str():</div>
-          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem;">
-            <input type="number" id="input-str-convert" value="2026" class="input-text" style="width: 140px; font-family: var(--font-mono); text-align: center;">
-            <span style="color: var(--text-secondary);">&rarr; dimasukkan ke &rarr;</span>
-            <span class="badge badge-amber" style="font-size: 0.95rem; font-family: var(--font-mono); padding: 0.4rem 0.8rem;">str(<span id="label-convert-in">2026</span>)</span>
-            <span style="color: var(--text-secondary);">&rarr; menjadi teks: &rarr;</span>
-            <span id="label-convert-out" style="font-size: 1.25rem; font-weight: 900; color: var(--accent-amber); font-family: var(--font-mono); background: var(--bg-card); padding: 0.3rem 0.85rem; border-radius: 8px; border: 1px solid var(--accent-amber);">"2026"</span>
+        <!-- CODE-AS-WIDGET: Solusi Penyelamat str() -->
+        <div class="code-widget-container">
+          <div class="code-line">
+            <span class="token-var">teks_aman</span>
+            <span class="token-op">=</span>
+            <span class="token-func">str</span><span style="color: #f59e0b; font-weight: 900;">(</span>
+            <input type="number" id="input-type-convert" value="2026" class="inline-code-input" style="width: 110px; text-align: center; border-color: var(--accent-amber);">
+            <span style="color: #f59e0b; font-weight: 900;">)</span>
+
+            <span style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 0.85rem; color: var(--text-secondary);">Berubah Jadi Teks Berhelm:</span>
+              <span id="label-type-converted" style="font-size: 1.35rem; font-weight: 900; color: var(--accent-amber); background: #020617; border: 2px solid var(--accent-amber); padding: 0.15rem 0.65rem; border-radius: 8px;">
+                "2026"
+              </span>
+            </span>
+          </div>
+
+          <div class="code-line" style="margin-top: 0.25rem;">
+            <span class="token-var">pesan</span>
+            <span class="token-op">=</span>
+            <span class="token-str">"Umur: "</span>
+            <span class="token-op">+</span>
+            <span class="token-func">str</span><span style="color: #10b981; font-weight: 900;">(</span><span class="token-num">15</span><span style="color: #10b981; font-weight: 900;">)</span>
+            <span style="margin-left: auto; font-size: 1.15rem; font-weight: 900; color: var(--accent-emerald);">
+              &rarr; "Umur: 15" ✅ Sukses!
+            </span>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- TAB 5: SAKLAR BINER -->
-    <section id="tab-biner" class="tab-content">
-      <div class="card" style="display: flex; flex-direction: column; gap: 1.5rem;">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title" style="color: var(--accent-emerald);">
-              <span>🧠</span> Stasiun 5: Otak Komputer (Interpreter & Sinyal Biner)
-            </h2>
-            <p class="card-subtitle">Komputer fisik aslinya hanya tahu sinyal listrik 0 dan 1. Interpreter yang menerjemahkannya!</p>
-          </div>
-        </div>
-
-        <!-- 3 Tahap Alur -->
-        <div class="grid-3">
-          <div class="card" style="text-align: center; background: rgba(2, 6, 23, 0.6);">
-            <span style="font-size: 2.25rem;">🧑‍💻</span>
-            <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-sky); margin: 0.5rem 0;">1. Kamu (Programmer)</h3>
-            <p style="font-size: 0.75rem; color: var(--text-secondary);">Menulis instruksi bahasa Python manusia:</p>
-            <div style="background: var(--bg-input); padding: 0.5rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-sky); margin-top: 0.5rem;">
-              print("Halo")
+        <!-- Saklar Listrik Biner Komputer -->
+        <div class="card" style="background: rgba(2, 6, 23, 0.85); border-color: #334155;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h4 style="font-size: 0.95rem; font-weight: 800; color: var(--text-primary);">
+                ⚡ Saklar Listrik Fisik Komputer (Sinyal 0 dan 1):
+              </h4>
+              <p style="font-size: 0.75rem; color: var(--text-secondary);">
+                Python diterjemahkan oleh Interpreter menjadi sinyal saklar listrik pada komponen chip!
+              </p>
             </div>
-          </div>
-
-          <div class="card" style="text-align: center; background: rgba(2, 6, 23, 0.6); border-color: rgba(245, 158, 11, 0.5);">
-            <span style="font-size: 2.25rem;">⚙️</span>
-            <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-amber); margin: 0.5rem 0;">2. Interpreter (Penerjemah)</h3>
-            <p style="font-size: 0.75rem; color: var(--text-secondary);">Menerjemahkan baris per baris ke bahasa mesin:</p>
-            <div style="background: rgba(245, 158, 11, 0.2); padding: 0.5rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-amber); margin-top: 0.5rem; font-weight: 700;">
-              Translating...
-            </div>
-          </div>
-
-          <div class="card" style="text-align: center; background: rgba(2, 6, 23, 0.6);">
-            <span style="font-size: 2.25rem;">💻</span>
-            <h3 style="font-size: 0.95rem; font-weight: 800; color: var(--accent-emerald); margin: 0.5rem 0;">3. Komputer Fisik</h3>
-            <p style="font-size: 0.75rem; color: var(--text-secondary);">Menjalankan sinyal saklar listrik:</p>
-            <div style="background: var(--bg-input); padding: 0.5rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-emerald); margin-top: 0.5rem; letter-spacing: 2px;">
-              01001000 01100001
-            </div>
-          </div>
-        </div>
-
-        <!-- Saklar Biner Interaktif -->
-        <div class="card" style="background: rgba(2, 6, 23, 0.8);">
-          <div style="text-align: center; margin-bottom: 1rem;">
-            <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-primary);">
-              Saklar Listrik Komputer (Klik tombol untuk ubah 0 dan 1):
-            </h4>
+            <span class="badge badge-emerald" id="label-binary-val">Biner: 10110011</span>
           </div>
           <div class="switch-grid" id="switch-container">
-            <!-- 8 tombol saklar dirender JS -->
+            <!-- 8 Tombol saklar dirender JS -->
           </div>
         </div>
+
       </div>
     </section>
 

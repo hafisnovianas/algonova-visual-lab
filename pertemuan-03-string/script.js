@@ -1,8 +1,22 @@
 import { audioSynth } from '../shared/js/audio.js';
 
-// ==========================================
+// =============================================================================
+// STATE TERPUSAT (SINGLE SOURCE OF TRUTH)
+// =============================================================================
+const state = {
+  text: 'Bunga Matahari',
+  index: 0,
+  sliceStart: 6,
+  sliceStop: 14,
+  findSource: 'Hotel ini luar biasa! Pantai yang indah!',
+  findQuery: 'indah',
+  typeNum: 2026,
+  switchBits: [1, 0, 1, 1, 0, 0, 1, 1]
+};
+
+// =============================================================================
 // 1. TAB NAVIGATION
-// ==========================================
+// =============================================================================
 const tabButtons = document.querySelectorAll('.tab-btn');
 const tabContents = document.querySelectorAll('.tab-content');
 
@@ -20,334 +34,516 @@ tabButtons.forEach(btn => {
       targetContent.classList.add('active');
     }
 
-    if (targetId === 'tab-slice') updateSlicing();
-    if (targetId === 'tab-find') runFind();
+    // Refresh rendering sesuai tab aktif
+    if (targetId === 'tab-index') renderIndexTab();
+    if (targetId === 'tab-slice') renderSliceTab();
+    if (targetId === 'tab-find') runFindScan(false);
   });
 });
 
-// ==========================================
-// 1.5. TAB 0: BEDAH KODE (X-RAY & SINTAKS)
-// ==========================================
-const xrayInputVar = document.getElementById('xray-input-var');
-const xrayInputVal = document.getElementById('xray-input-val');
-const btnXrayInsert = document.getElementById('btn-xray-insert');
-const xrayChestLabel = document.getElementById('xray-chest-label');
-const xrayChestContent = document.getElementById('xray-chest-content');
-const xrayChestVisual = document.getElementById('xray-chest-visual');
-const btnRunMeter = document.getElementById('btn-run-meter');
-const xrayMeterTapeDisplay = document.getElementById('xray-meter-tape-display');
-const liveCodeXray = document.getElementById('live-code-xray');
-const btnXrayModeAssign = document.getElementById('btn-xray-mode-assign');
-const btnXrayModeLen = document.getElementById('btn-xray-mode-len');
+// Helper animasi lompatan hasil (Micro-Feedback untuk ADHD)
+function triggerJumpAnimation(element) {
+  if (!element) return;
+  element.classList.remove('jumped');
+  void element.offsetWidth; // trigger reflow
+  element.classList.add('jumped');
+}
 
-function syncXRay() {
-  const vName = xrayInputVar.value || 'masukan';
-  const vVal = xrayInputVal.value || 'Bunga Matahari';
+// =============================================================================
+// 2. TAB 1: DEKLARASI VARIABEL & METERAN LEN()
+// =============================================================================
+const inputDeclareVal = document.getElementById('input-declare-val');
+const btnPullMeter = document.getElementById('btn-pull-meter');
+const labelDeclareResult = document.getElementById('label-declare-result');
+const declareMeterTape = document.getElementById('declare-meter-tape');
+const badgeMissionDeclare = document.getElementById('badge-mission-declare');
+const presetDeclareSunflower = document.getElementById('preset-declare-sunflower');
+const presetDeclareKate = document.getElementById('preset-declare-kate');
 
-  if (xrayChestLabel) xrayChestLabel.textContent = vName;
-  if (xrayChestContent) xrayChestContent.textContent = `"${vVal}"`;
+function updateDeclareTab() {
+  const currentText = inputDeclareVal.value || '';
+  state.text = currentText;
+  labelDeclareResult.textContent = currentText.length;
+  triggerJumpAnimation(labelDeclareResult);
 
-  if (liveCodeXray) {
-    liveCodeXray.setAttribute('var-name', vName);
-    liveCodeXray.setAttribute('str-val', vVal);
-    liveCodeXray.render();
+  // Evaluasi Misi Task 51172 L5
+  if (currentText.toLowerCase() === 'bunga matahari') {
+    badgeMissionDeclare.className = 'mission-badge mission-badge-success';
+    badgeMissionDeclare.innerHTML = `<span>🎉</span> <span>Sukses! Panjang = 14</span>`;
+  } else {
+    badgeMissionDeclare.className = 'mission-badge mission-badge-pending';
+    badgeMissionDeclare.innerHTML = `<span>📏</span> <span>Total: ${currentText.length} Huruf</span>`;
   }
-
-  // Sinkronkan juga ke Stasiun 1 Gerbong
-  if (inputStr1) {
-    inputStr1.value = vVal;
-    renderTrain();
-  }
 }
 
-if (xrayInputVar && xrayInputVal) {
-  xrayInputVar.addEventListener('input', syncXRay);
-  xrayInputVal.addEventListener('input', syncXRay);
-}
+function runMeterTapeAnimation() {
+  const currentText = state.text || '';
+  declareMeterTape.innerHTML = '';
 
-if (btnXrayInsert) {
-  btnXrayInsert.addEventListener('click', () => {
-    audioSynth.playPreset('success');
-    xrayChestContent.classList.remove('slide-in-anim');
-    void xrayChestContent.offsetWidth; // trigger reflow
-    xrayChestContent.classList.add('slide-in-anim');
-    syncXRay();
-  });
-}
-
-if (btnXrayModeAssign) {
-  btnXrayModeAssign.addEventListener('click', () => {
-    audioSynth.playTone(500, 'sine', 0.05);
-    liveCodeXray.setAttribute('mode', 'assign');
-    syncXRay();
-  });
-}
-
-if (btnXrayModeLen) {
-  btnXrayModeLen.addEventListener('click', () => {
-    audioSynth.playTone(500, 'sine', 0.05);
-    liveCodeXray.setAttribute('mode', 'len');
-    syncXRay();
-  });
-}
-
-if (btnRunMeter) {
-  btnRunMeter.addEventListener('click', () => {
-    const text = xrayInputVal.value || 'Bunga Matahari';
-    xrayMeterTapeDisplay.style.display = 'flex';
-    xrayMeterTapeDisplay.innerHTML = '';
-
-    // Otomatis ubah mode X-Ray ke mode len (inside-out)
-    liveCodeXray.setAttribute('mode', 'len');
-    syncXRay();
-
-    // Animasi meteran meluncur per huruf dengan audio tick
-    for (let i = 0; i < text.length; i++) {
-      setTimeout(() => {
-        audioSynth.playTone(400 + (i * 20), 'triangle', 0.04, 0.06);
-        const unit = document.createElement('div');
-        unit.className = 'meter-unit';
-        unit.innerHTML = `<span>#${i + 1}</span><span style="font-size: 11px; font-weight: 900;">${text[i] === ' ' ? '·' : text[i]}</span>`;
-        xrayMeterTapeDisplay.appendChild(unit);
-
-        if (i === text.length - 1) {
-          setTimeout(() => {
-            audioSynth.playPreset('success');
-            const total = document.createElement('div');
-            total.style.background = '#10b981';
-            total.style.color = '#020617';
-            total.style.padding = '0.25rem 0.65rem';
-            total.style.borderRadius = '6px';
-            total.style.fontSize = '0.9rem';
-            total.style.fontWeight = '900';
-            total.textContent = `TOTAL: ${text.length}`;
-            xrayMeterTapeDisplay.appendChild(total);
-          }, 100);
-        }
-      }, i * 40);
-    }
-  });
-}
-
-// ==========================================
-// 2. TAB 1: GERBONG INDEKS & LEN()
-// ==========================================
-const inputStr1 = document.getElementById('input-string-1');
-const trainContainer = document.getElementById('train-container');
-const labelLen = document.getElementById('label-len');
-const liveCodeIndex = document.getElementById('live-code-index');
-const liveResultLen = document.getElementById('live-result-len');
-const liveResultFirst = document.getElementById('live-result-first');
-
-function renderTrain() {
-  const text = inputStr1.value || '';
-  trainContainer.innerHTML = '';
-  labelLen.textContent = text.length;
-  liveCodeIndex.textContent = `teks = "${text}"`;
-  liveResultLen.textContent = `len(teks) → ${text.length}`;
-  liveResultFirst.textContent = text.length > 0 ? `teks[0] → '${text[0]}'` : `teks[0] → (kosong)`;
-
-  if (text.length === 0) {
-    trainContainer.innerHTML = `<span style="font-size: 0.8rem; color: #64748b; font-style: italic;">Ketik teks untuk memunculkan gerbong...</span>`;
+  if (currentText.length === 0) {
+    declareMeterTape.innerHTML = `<span style="font-size: 0.8rem; color: #020617; font-weight: 800;">Teks kosong (0 huruf)</span>`;
     return;
   }
 
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const car = document.createElement('train-car');
-    car.setAttribute('char', char);
-    car.setAttribute('index', i);
-    if (char === ' ') car.setAttribute('space', 'true');
-    trainContainer.appendChild(car);
-  }
+  // Animasi meluncur pita meteran per huruf
+  for (let i = 0; i < currentText.length; i++) {
+    setTimeout(() => {
+      audioSynth.playTone(360 + (i * 25), 'triangle', 0.04, 0.05);
+      const unit = document.createElement('div');
+      unit.className = 'meter-unit';
+      const char = currentText[i] === ' ' ? '·' : currentText[i];
+      unit.innerHTML = `<span>#${i + 1}</span><span style="font-weight: 900;">${char}</span>`;
+      declareMeterTape.appendChild(unit);
 
-  // Update slider slice max
-  const sStart = document.getElementById('slider-start');
-  const sEnd = document.getElementById('slider-end');
-  if (sStart && sEnd) {
-    sStart.max = text.length;
-    sEnd.max = text.length;
-    if (parseInt(sEnd.value) > text.length) sEnd.value = text.length;
+      // Selesai menghitung huruf terakhir
+      if (i === currentText.length - 1) {
+        setTimeout(() => {
+          audioSynth.playPreset('success');
+          updateDeclareTab();
+
+          const totalBadge = document.createElement('div');
+          totalBadge.style.background = '#020617';
+          totalBadge.style.color = '#34d399';
+          totalBadge.style.border = '2px solid #10b981';
+          totalBadge.style.padding = '0.2rem 0.65rem';
+          totalBadge.style.borderRadius = '6px';
+          totalBadge.style.fontSize = '0.85rem';
+          totalBadge.style.fontWeight = '900';
+          totalBadge.textContent = `TOTAL len() = ${currentText.length}`;
+          declareMeterTape.appendChild(totalBadge);
+        }, 120);
+      }
+    }, i * 35);
   }
 }
 
-inputStr1.addEventListener('input', () => {
-  audioSynth.playTone(520, 'sine', 0.03);
-  renderTrain();
-});
-
-// Preset Buttons Tab 1
-document.querySelectorAll('[data-preset]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    inputStr1.value = btn.getAttribute('data-preset');
-    renderTrain();
+if (inputDeclareVal) {
+  inputDeclareVal.addEventListener('input', () => {
+    audioSynth.playTone(520, 'sine', 0.03);
+    updateDeclareTab();
   });
-});
+}
 
-// ==========================================
-// 3. TAB 2: PISAU SLICING
-// ==========================================
-const sliderStart = document.getElementById('slider-start');
-const sliderEnd = document.getElementById('slider-end');
+if (btnPullMeter) {
+  btnPullMeter.addEventListener('click', runMeterTapeAnimation);
+}
+
+if (presetDeclareSunflower) {
+  presetDeclareSunflower.addEventListener('click', () => {
+    inputDeclareVal.value = 'Bunga Matahari';
+    state.text = 'Bunga Matahari';
+    state.sliceStart = 6;
+    state.sliceStop = 14;
+    runMeterTapeAnimation();
+  });
+}
+
+if (presetDeclareKate) {
+  presetDeclareKate.addEventListener('click', () => {
+    inputDeclareVal.value = 'Kate dan Jim';
+    state.text = 'Kate dan Jim';
+    state.sliceStart = 0;
+    state.sliceStop = 4;
+    runMeterTapeAnimation();
+  });
+}
+
+// =============================================================================
+// 3. TAB 2: GERBONG INDEKS [ i ]
+// =============================================================================
+const indexTrainTrack = document.getElementById('index-train-track');
+const valIndexStepper = document.getElementById('val-index-stepper');
+const labelIndexCharResult = document.getElementById('label-index-char-result');
+const sliderIndexRange = document.getElementById('slider-index-range');
+const sliderIndexValLabel = document.getElementById('slider-index-val-label');
+const labelIndexLen = document.getElementById('label-index-len');
+const badgeMissionIndex = document.getElementById('badge-mission-index');
+const btnIndexDec = document.getElementById('btn-index-dec');
+const btnIndexInc = document.getElementById('btn-index-inc');
+const presetIndexSunflower = document.getElementById('preset-index-sunflower');
+const presetIndexKate = document.getElementById('preset-index-kate');
+
+function renderIndexTab() {
+  const text = state.text || 'Bunga Matahari';
+  const len = text.length;
+
+  if (labelIndexLen) labelIndexLen.textContent = len;
+
+  // Sesuaikan batas maksimal indeks (len - 1)
+  const maxIdx = Math.max(0, len - 1);
+  if (state.index > maxIdx) state.index = maxIdx;
+  if (state.index < 0) state.index = 0;
+
+  if (sliderIndexRange) {
+    sliderIndexRange.max = maxIdx;
+    sliderIndexRange.value = state.index;
+  }
+  if (sliderIndexValLabel) sliderIndexValLabel.textContent = state.index;
+  if (valIndexStepper) valIndexStepper.textContent = state.index;
+
+  // Render Rel Gerbong
+  if (indexTrainTrack) {
+    indexTrainTrack.innerHTML = '';
+    for (let i = 0; i < len; i++) {
+      const char = text[i];
+      const car = document.createElement('train-car');
+      car.setAttribute('char', char);
+      car.setAttribute('index', i);
+      if (char === ' ') car.setAttribute('space', 'true');
+      if (i === state.index) car.setAttribute('active', 'true');
+
+      // Klik langsung gerbong untuk memilih roda
+      car.addEventListener('click', () => {
+        setIndexValue(i);
+      });
+
+      indexTrainTrack.appendChild(car);
+    }
+  }
+
+  // Karakter hasil terambil
+  const selectedChar = len > 0 ? text[state.index] : '';
+  if (labelIndexCharResult) {
+    labelIndexCharResult.textContent = selectedChar === ' ' ? "' '" : `'${selectedChar}'`;
+    triggerJumpAnimation(labelIndexCharResult);
+  }
+
+  // Evaluasi Misi Algonova Task 51172 L6 (Ambil huruf M pada roda 6)
+  if (badgeMissionIndex) {
+    if (text.toLowerCase().includes('matahari') && state.index === 6 && selectedChar.toUpperCase() === 'M') {
+      badgeMissionIndex.className = 'mission-badge mission-badge-success';
+      badgeMissionIndex.innerHTML = `<span>🎉</span> <span>Target Tercapai! Huruf 'M' (Roda 6)</span>`;
+      audioSynth.playPreset('success');
+    } else {
+      badgeMissionIndex.className = 'mission-badge mission-badge-pending';
+      badgeMissionIndex.innerHTML = `<span>⏳</span> <span>Roda Aktif: ${state.index} (${selectedChar})</span>`;
+    }
+  }
+}
+
+function setIndexValue(newVal) {
+  const maxIdx = Math.max(0, (state.text || '').length - 1);
+  state.index = Math.min(Math.max(0, newVal), maxIdx);
+  audioSynth.playTone(320 + (state.index * 30), 'sine', 0.05);
+  renderIndexTab();
+}
+
+if (btnIndexDec) {
+  btnIndexDec.addEventListener('click', () => setIndexValue(state.index - 1));
+}
+if (btnIndexInc) {
+  btnIndexInc.addEventListener('click', () => setIndexValue(state.index + 1));
+}
+if (sliderIndexRange) {
+  sliderIndexRange.addEventListener('input', (e) => setIndexValue(parseInt(e.target.value) || 0));
+}
+
+if (presetIndexSunflower) {
+  presetIndexSunflower.addEventListener('click', () => {
+    state.text = 'Bunga Matahari';
+    state.index = 6;
+    if (inputDeclareVal) inputDeclareVal.value = 'Bunga Matahari';
+    renderIndexTab();
+  });
+}
+
+if (presetIndexKate) {
+  presetIndexKate.addEventListener('click', () => {
+    state.text = 'Kate dan Jim';
+    state.index = 0;
+    if (inputDeclareVal) inputDeclareVal.value = 'Kate dan Jim';
+    renderIndexTab();
+  });
+}
+
+// =============================================================================
+// 4. TAB 3: PISAU SLICING [ a : b ]
+// =============================================================================
+const sliceTrainTrack = document.getElementById('slice-train-track');
 const valSliceStart = document.getElementById('val-slice-start');
-const valSliceEnd = document.getElementById('val-slice-end');
-const sliceContainer = document.getElementById('slice-container');
-const sliceCodeSyntax = document.getElementById('slice-code-syntax');
-const sliceResultOutput = document.getElementById('slice-result-output');
+const valSliceStop = document.getElementById('val-slice-stop');
+const labelSliceResult = document.getElementById('label-slice-result');
+const sliderSliceStart = document.getElementById('slider-slice-start');
+const sliderSliceStop = document.getElementById('slider-slice-stop');
+const labelSliderStart = document.getElementById('label-slider-start');
+const labelSliderStop = document.getElementById('label-slider-stop');
+const badgeMissionSlice = document.getElementById('badge-mission-slice');
+const btnSliceStartDec = document.getElementById('btn-slice-start-dec');
+const btnSliceStartInc = document.getElementById('btn-slice-start-inc');
+const btnSliceStopDec = document.getElementById('btn-slice-stop-dec');
+const btnSliceStopInc = document.getElementById('btn-slice-stop-inc');
+const presetSliceSunflower = document.getElementById('preset-slice-sunflower');
+const presetSliceKate = document.getElementById('preset-slice-kate');
+const presetSliceJim = document.getElementById('preset-slice-jim');
 
-function updateSlicing() {
-  const text = inputStr1.value || 'Kate dan Jim';
-  let start = parseInt(sliderStart.value) || 0;
-  let end = parseInt(sliderEnd.value) || 0;
+function renderSliceTab() {
+  const text = state.text || 'Bunga Matahari';
+  const len = text.length;
 
-  if (start > end) {
-    end = start;
-    sliderEnd.value = end;
+  // Validasi batas rentang
+  if (state.sliceStart < 0) state.sliceStart = 0;
+  if (state.sliceStart > len) state.sliceStart = len;
+
+  if (state.sliceStop < state.sliceStart) state.sliceStop = state.sliceStart;
+  if (state.sliceStop > len) state.sliceStop = len;
+
+  // Sinkronisasi teks label & slider
+  if (valSliceStart) valSliceStart.textContent = state.sliceStart;
+  if (valSliceStop) valSliceStop.textContent = state.sliceStop;
+  if (labelSliderStart) labelSliderStart.textContent = state.sliceStart;
+  if (labelSliderStop) labelSliderStop.textContent = state.sliceStop;
+
+  if (sliderSliceStart) {
+    sliderSliceStart.max = len;
+    sliderSliceStart.value = state.sliceStart;
+  }
+  if (sliderSliceStop) {
+    sliderSliceStop.max = len;
+    sliderSliceStop.value = state.sliceStop;
   }
 
-  valSliceStart.textContent = start;
-  valSliceEnd.textContent = end;
-
-  sliceContainer.innerHTML = '';
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const inSlice = i >= start && i < end;
-    const car = document.createElement('train-car');
-    car.setAttribute('char', char);
-    car.setAttribute('index', i);
-    car.setAttribute('active', inSlice ? 'true' : 'false');
-    if (char === ' ') car.setAttribute('space', 'true');
-    sliceContainer.appendChild(car);
+  // Render gerbong dengan penyorotan pisau slicing
+  if (sliceTrainTrack) {
+    sliceTrainTrack.innerHTML = '';
+    for (let i = 0; i < len; i++) {
+      const char = text[i];
+      const isInSlice = (i >= state.sliceStart && i < state.sliceStop);
+      const car = document.createElement('train-car');
+      car.setAttribute('char', char);
+      car.setAttribute('index', i);
+      car.setAttribute('active', isInSlice ? 'true' : 'false');
+      if (char === ' ') car.setAttribute('space', 'true');
+      sliceTrainTrack.appendChild(car);
+    }
   }
 
-  const slicedPart = text.substring(start, end);
-  sliceCodeSyntax.textContent = `potongan = teks[${start}:${end}]`;
-  sliceResultOutput.textContent = `"${slicedPart}"`;
-  audioSynth.playTone(280 + (end - start) * 20, 'sine', 0.03);
+  // Hasil potongan teks Python
+  const slicedText = text.substring(state.sliceStart, state.sliceStop);
+  if (labelSliceResult) {
+    labelSliceResult.textContent = `"${slicedText}"`;
+    triggerJumpAnimation(labelSliceResult);
+  }
+
+  // Evaluasi Misi Task 51172 / 51173
+  if (badgeMissionSlice) {
+    if (slicedText === 'Matahari') {
+      badgeMissionSlice.className = 'mission-badge mission-badge-success';
+      badgeMissionSlice.innerHTML = `<span>🎉</span> <span>Hebat! 'Matahari' Terpotong [6:14]</span>`;
+      audioSynth.playPreset('success');
+    } else if (slicedText === 'Kate') {
+      badgeMissionSlice.className = 'mission-badge mission-badge-success';
+      badgeMissionSlice.innerHTML = `<span>🎉</span> <span>Hebat! 'Kate' Terpotong [0:4]</span>`;
+      audioSynth.playPreset('success');
+    } else if (slicedText === 'Jim') {
+      badgeMissionSlice.className = 'mission-badge mission-badge-success';
+      badgeMissionSlice.innerHTML = `<span>🎉</span> <span>Hebat! 'Jim' Terpotong [9:12]</span>`;
+      audioSynth.playPreset('success');
+    } else {
+      badgeMissionSlice.className = 'mission-badge mission-badge-pending';
+      badgeMissionSlice.innerHTML = `<span>✂️</span> <span>Potongan: "${slicedText}"</span>`;
+    }
+  }
 }
 
-sliderStart.addEventListener('input', updateSlicing);
-sliderEnd.addEventListener('input', updateSlicing);
+function updateSliceLimits(start, stop) {
+  state.sliceStart = start;
+  state.sliceStop = stop;
+  audioSynth.playTone(280 + ((stop - start) * 20), 'sine', 0.04);
+  renderSliceTab();
+}
 
-document.getElementById('preset-slice-kate').addEventListener('click', () => {
-  inputStr1.value = 'Kate dan Jim';
-  renderTrain();
-  sliderStart.value = 0;
-  sliderEnd.value = 4;
-  updateSlicing();
-});
+if (btnSliceStartDec) btnSliceStartDec.addEventListener('click', () => updateSliceLimits(state.sliceStart - 1, state.sliceStop));
+if (btnSliceStartInc) btnSliceStartInc.addEventListener('click', () => updateSliceLimits(state.sliceStart + 1, state.sliceStop));
+if (btnSliceStopDec) btnSliceStopDec.addEventListener('click', () => updateSliceLimits(state.sliceStart, state.sliceStop - 1));
+if (btnSliceStopInc) btnSliceStopInc.addEventListener('click', () => updateSliceLimits(state.sliceStart, state.sliceStop + 1));
 
-document.getElementById('preset-slice-jim').addEventListener('click', () => {
-  inputStr1.value = 'Kate dan Jim';
-  renderTrain();
-  sliderStart.value = 9;
-  sliderEnd.value = 12;
-  updateSlicing();
-});
+if (sliderSliceStart) {
+  sliderSliceStart.addEventListener('input', (e) => {
+    let s = parseInt(e.target.value) || 0;
+    if (s > state.sliceStop) state.sliceStop = s;
+    updateSliceLimits(s, state.sliceStop);
+  });
+}
 
-// ==========================================
-// 4. TAB 3: DETEKTIF .FIND()
-// ==========================================
-const findSource = document.getElementById('find-source');
-const findQuery = document.getElementById('find-query');
-const findRadar = document.getElementById('find-radar');
-const findWordLabel = document.getElementById('find-word-label');
-const findResBadge = document.getElementById('find-res-badge');
-const findBoolBadge = document.getElementById('find-bool-badge');
+if (sliderSliceStop) {
+  sliderSliceStop.addEventListener('input', (e) => {
+    let eVal = parseInt(e.target.value) || 0;
+    if (eVal < state.sliceStart) state.sliceStart = eVal;
+    updateSliceLimits(state.sliceStart, eVal);
+  });
+}
 
-function runFind() {
-  const source = findSource.value || '';
-  const query = findQuery.value || '';
-  findWordLabel.textContent = query;
-  findRadar.innerHTML = '';
+if (presetSliceSunflower) {
+  presetSliceSunflower.addEventListener('click', () => {
+    state.text = 'Bunga Matahari';
+    if (inputDeclareVal) inputDeclareVal.value = 'Bunga Matahari';
+    updateSliceLimits(6, 14);
+  });
+}
 
-  const idx = source.indexOf(query);
+if (presetSliceKate) {
+  presetSliceKate.addEventListener('click', () => {
+    state.text = 'Kate dan Jim';
+    if (inputDeclareVal) inputDeclareVal.value = 'Kate dan Jim';
+    updateSliceLimits(0, 4);
+  });
+}
 
-  if (idx !== -1 && query.length > 0) {
-    findResBadge.textContent = `Hasil: ${idx}`;
-    findResBadge.className = 'badge badge-emerald';
-    findBoolBadge.textContent = 'True (Ada!)';
-    findBoolBadge.className = 'badge badge-emerald';
-    audioSynth.playPreset('success');
+if (presetSliceJim) {
+  presetSliceJim.addEventListener('click', () => {
+    state.text = 'Kate dan Jim';
+    if (inputDeclareVal) inputDeclareVal.value = 'Kate dan Jim';
+    updateSliceLimits(9, 12);
+  });
+}
+
+// =============================================================================
+// 5. TAB 4: DETEKTIF PENCARIAN .FIND()
+// =============================================================================
+const findSourceInput = document.getElementById('find-source-input');
+const findQueryInput = document.getElementById('find-query-input');
+const btnScanFind = document.getElementById('btn-scan-find');
+const findResVal = document.getElementById('find-res-val');
+const findBoolVal = document.getElementById('find-bool-val');
+const labelFindInWord = document.getElementById('label-find-in-word');
+const findRadarTrack = document.getElementById('find-radar-track');
+const badgeMissionFind = document.getElementById('badge-mission-find');
+
+function runFindScan(animate = true) {
+  const source = findSourceInput.value || '';
+  const query = findQueryInput.value || '';
+  state.findSource = source;
+  state.findQuery = query;
+
+  if (labelFindInWord) labelFindInWord.textContent = query;
+
+  const matchIdx = source.indexOf(query);
+  const isFound = (matchIdx !== -1 && query.length > 0);
+
+  // Render radar statis
+  if (findRadarTrack) {
+    findRadarTrack.innerHTML = '';
+    for (let i = 0; i < source.length; i++) {
+      const isPart = (isFound && i >= matchIdx && i < matchIdx + query.length);
+      const box = document.createElement('div');
+      box.style.display = 'flex';
+      box.style.flexDirection = 'column';
+      box.style.alignItems = 'center';
+      box.style.padding = '0.35rem 0.5rem';
+      box.style.borderRadius = '8px';
+      box.style.fontFamily = 'var(--font-mono)';
+      box.style.fontSize = '0.85rem';
+      box.style.fontWeight = '700';
+      box.style.border = isPart ? '2px solid #8b5cf6' : '1px solid #334155';
+      box.style.background = isPart ? '#8b5cf6' : '#020617';
+      box.style.color = isPart ? '#ffffff' : '#94a3b8';
+
+      box.innerHTML = `
+        <span style="font-size: 9px; opacity: 0.7;">${i}</span>
+        <span>${source[i] === ' ' ? '&nbsp;' : source[i]}</span>
+      `;
+      findRadarTrack.appendChild(box);
+    }
+  }
+
+  // Update nilai hasil
+  if (isFound) {
+    findResVal.textContent = matchIdx;
+    findResVal.style.color = '#34d399';
+    findResVal.style.borderColor = '#10b981';
+
+    findBoolVal.textContent = 'True (Ada!)';
+    findBoolVal.className = 'badge badge-emerald';
+
+    if (badgeMissionFind) {
+      badgeMissionFind.className = 'mission-badge mission-badge-success';
+      badgeMissionFind.innerHTML = `<span>🎉</span> <span>Ketemu di Indeks ${matchIdx}!</span>`;
+    }
+
+    if (animate) audioSynth.playPreset('success');
   } else {
-    findResBadge.textContent = 'Hasil: -1 (Tidak ada!)';
-    findResBadge.className = 'badge badge-rose';
-    findBoolBadge.textContent = 'False (Nggak ada)';
-    findBoolBadge.className = 'badge badge-rose';
-    audioSynth.playPreset('error');
+    findResVal.textContent = '-1';
+    findResVal.style.color = '#f43f5e';
+    findResVal.style.borderColor = '#f43f5e';
+
+    findBoolVal.textContent = 'False (Nggak ada)';
+    findBoolVal.className = 'badge badge-rose';
+
+    if (badgeMissionFind) {
+      badgeMissionFind.className = 'mission-badge mission-badge-pending';
+      badgeMissionFind.innerHTML = `<span>⚠️</span> <span>Tidak Ada (Hasil = -1)</span>`;
+    }
+
+    if (animate) audioSynth.playPreset('error');
   }
 
-  for (let i = 0; i < source.length; i++) {
-    const isMatch = (idx !== -1 && query.length > 0 && i >= idx && i < idx + query.length);
-    const box = document.createElement('div');
-    box.style.display = 'flex';
-    box.style.flexDirection = 'column';
-    box.style.alignItems = 'center';
-    box.style.padding = '0.35rem 0.5rem';
-    box.style.borderRadius = '8px';
-    box.style.fontFamily = 'var(--font-mono)';
-    box.style.fontSize = '0.85rem';
-    box.style.fontWeight = '700';
-    box.style.border = isMatch ? '2px solid #8b5cf6' : '1px solid #334155';
-    box.style.background = isMatch ? '#8b5cf6' : '#020617';
-    box.style.color = isMatch ? '#ffffff' : '#94a3b8';
-
-    box.innerHTML = `
-      <span style="font-size: 9px; opacity: 0.7;">${i}</span>
-      <span>${source[i] === ' ' ? '&nbsp;' : source[i]}</span>
-    `;
-    findRadar.appendChild(box);
-  }
+  triggerJumpAnimation(findResVal);
 }
 
-document.getElementById('btn-run-find').addEventListener('click', runFind);
-findQuery.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') runFind();
-});
+if (btnScanFind) btnScanFind.addEventListener('click', () => runFindScan(true));
+if (findQueryInput) {
+  findQueryInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') runFindScan(true);
+  });
+  findQueryInput.addEventListener('input', () => runFindScan(false));
+}
+if (findSourceInput) {
+  findSourceInput.addEventListener('input', () => runFindScan(false));
+}
 
 document.querySelectorAll('[data-find-preset]').forEach(btn => {
   btn.addEventListener('click', () => {
-    findQuery.value = btn.getAttribute('data-find-preset');
-    runFind();
+    findQueryInput.value = btn.getAttribute('data-find-preset');
+    runFindScan(true);
   });
 });
 
-// ==========================================
-// 5. TAB 4: CONVERTER STR()
-// ==========================================
-const inputConvert = document.getElementById('input-str-convert');
-const labelConvertIn = document.getElementById('label-convert-in');
-const labelConvertOut = document.getElementById('label-convert-out');
-
-inputConvert.addEventListener('input', (e) => {
-  const val = e.target.value || '0';
-  labelConvertIn.textContent = val;
-  labelConvertOut.textContent = `"${val}"`;
-  audioSynth.playTone(400);
-});
-
-// ==========================================
-// 6. TAB 5: SAKLAR BINER 0 & 1
-// ==========================================
+// =============================================================================
+// 6. TAB 5: KONVERSI TIPE DATA STR() & SAKLAR BINER
+// =============================================================================
+const inputTypeConvert = document.getElementById('input-type-convert');
+const labelTypeConverted = document.getElementById('label-type-converted');
 const switchContainer = document.getElementById('switch-container');
-const switchBits = [1, 0, 1, 1, 0, 0, 1, 1];
+const labelBinaryVal = document.getElementById('label-binary-val');
 
-function renderSwitches() {
-  switchContainer.innerHTML = '';
-  switchBits.forEach((bit, idx) => {
-    const btn = document.createElement('button');
-    btn.className = `switch-btn ${bit === 1 ? 'on' : 'off'}`;
-    btn.innerHTML = `<span>${bit === 1 ? '💡' : '⚫'}</span><span>${bit}</span>`;
-    btn.addEventListener('click', () => {
-      switchBits[idx] = switchBits[idx] === 1 ? 0 : 1;
-      audioSynth.playPreset('switch');
-      renderSwitches();
-    });
-    switchContainer.appendChild(btn);
+if (inputTypeConvert) {
+  inputTypeConvert.addEventListener('input', (e) => {
+    const val = e.target.value || '0';
+    state.typeNum = val;
+    labelTypeConverted.textContent = `"${val}"`;
+    triggerJumpAnimation(labelTypeConverted);
+    audioSynth.playTone(480, 'sine', 0.04);
   });
 }
 
-// Inisialisasi Pertama
-syncXRay();
-renderTrain();
-renderSwitches();
+function renderBinarySwitches() {
+  if (!switchContainer) return;
+  switchContainer.innerHTML = '';
+
+  state.switchBits.forEach((bit, idx) => {
+    const btn = document.createElement('button');
+    btn.className = `switch-btn ${bit === 1 ? 'on' : 'off'}`;
+    btn.innerHTML = `<span>${bit === 1 ? '💡' : '⚫'}</span><span>${bit}</span>`;
+
+    btn.addEventListener('click', () => {
+      state.switchBits[idx] = state.switchBits[idx] === 1 ? 0 : 1;
+      audioSynth.playPreset('switch');
+      renderBinarySwitches();
+    });
+
+    switchContainer.appendChild(btn);
+  });
+
+  if (labelBinaryVal) {
+    labelBinaryVal.textContent = `Biner: ${state.switchBits.join('')}`;
+  }
+}
+
+// =============================================================================
+// INITIAL RUN
+// =============================================================================
+updateDeclareTab();
+renderIndexTab();
+renderSliceTab();
+runFindScan(false);
+renderBinarySwitches();

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Pertemuan 3 (String & Interpreter)**: Merombak total arsitektur antarmuka menjadi pendekatan *Code-as-Widget*, di mana setiap baris kode Python berfungsi langsung sebagai alat peraga visual interaktif (inline steppers & inputs).
+- Mengeliminasi Stasiun 0 terpisah dan menyatukan seluruh materi ke dalam 5 Tab Operasi Sintaks Terpadu (Variabel & len, Indeks [i], Slicing [a:b], Detektif .find, dan Tipe Data str/Biner).
+- Menambahkan sistem Misi Cepat dengan deteksi otomatis dan audio chime reward untuk studi kasus Algonova Task 51172 & Task 51173.
+
 ### Added
 - **Stasiun 0: Bedah Kode Interaktif (Code X-Ray)** pada Pertemuan 3 (`pertemuan-03-string/`) untuk menjembatani visual ke sintaks kode Python bagi siswa ADHD.
 - **Web Component `<code-xray>`** berbasis W3C Custom Elements native untuk membedah anatomi kode Python (Inside-Out execution flow: 1 Ambil Peti -> 2 Ukur -> 3 Simpan via `=`).
