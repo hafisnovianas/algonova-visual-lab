@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pertemuan 4: Konstruksi Bersarang (Split Editor & Visual Lab) - Algo Visual Lab</title>
+  <title>Pertemuan 4: Konstruksi Bersarang (Real Code Editor & Visual Lab) - Algo Visual Lab</title>
 
   <!-- Integrasi Shared Design System Algo Visual Lab -->
   <link rel="stylesheet" href="../shared/css/style.css">
@@ -11,11 +11,9 @@
 
   <style>
     /* ==========================================================================
-       SPLIT WORKBENCH DESIGN (PANEL KIRI: EDITOR | PANEL KANAN: LIVE VISUAL)
-       Khusus Siswa ADHD:
-       - Jarak pandang dekat: Kiri = Kode Python, Kanan = Peraga Hidup
-       - Sekali tekan "Jalankan", visual kanan langsung bergerak seketika!
-       - Zero text overload: Fokus manipulasi kode & animasi fisik
+       SPLIT WORKBENCH DESIGN:
+       PANEL KIRI: REAL PYTHON CODE EDITOR (<textarea> + AUTO LINE NUMBERS + TAB)
+       PANEL KANAN: LIVE VISUAL PERAGA FISIK INTERAKTIF
        ========================================================================== */
     :root {
       --bg-main: #0b1120;
@@ -48,7 +46,7 @@
     }
 
     .app-container {
-      max-width: 1280px;
+      max-width: 1320px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
@@ -95,22 +93,22 @@
       box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
     }
 
-    /* SPLIT WORKBENCH LAYOUT (KIRI: EDITOR, KANAN: VISUAL) */
+    /* SPLIT WORKBENCH LAYOUT (KIRI: 480px, KANAN: 1fr) */
     .split-workbench {
       display: grid;
-      grid-template-columns: 460px 1fr;
+      grid-template-columns: 490px 1fr;
       gap: 1.25rem;
       align-items: stretch;
     }
 
-    @media (max-width: 980px) {
+    @media (max-width: 1040px) {
       .split-workbench {
         grid-template-columns: 1fr;
       }
     }
 
     /* ==========================================================================
-       PANEL KIRI: PYTHON CODE EDITOR
+       PANEL KIRI: REAL PYTHON CODE EDITOR (<textarea>)
        ========================================================================== */
     .editor-card {
       background: #0f172a;
@@ -143,93 +141,73 @@
     .editor-title {
       font-size: 0.8rem;
       font-weight: 800;
-      color: #94a3b8;
+      color: #cbd5e1;
       font-family: var(--font-mono);
       letter-spacing: 0.5px;
     }
 
-    /* Area Editor Kode */
-    .editor-body {
+    /* Area Textarea Code Editor Real */
+    .editor-workspace {
       background: #020617;
-      padding: 1rem;
+      padding: 0.75rem;
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
+      gap: 0.75rem;
     }
 
-    .code-lines-wrapper {
-      background: #090d16;
+    .editor-container {
+      position: relative;
+      display: flex;
+      background: #060a12;
       border: 1.5px solid #1e293b;
       border-radius: 12px;
-      padding: 0.85rem 1rem;
-      font-family: var(--font-mono);
-      font-size: 1.05rem;
-      line-height: 1.8;
-      color: #f8fafc;
-      min-height: 140px;
+      overflow: hidden;
+      min-height: 200px;
+      max-height: 260px;
+    }
+    .editor-container:focus-within {
+      border-color: var(--accent-amber);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
     }
 
-    .code-line {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.15rem 0.4rem;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-    .code-line.active-executing {
-      background: rgba(245, 158, 11, 0.2);
-      border-left: 3px solid var(--accent-amber);
-    }
-
-    .line-num {
+    /* Nomor Baris Otomatis (Line Numbers Gutter) */
+    .editor-gutter {
+      width: 40px;
+      background: #090e1a;
+      border-right: 1px solid #1e293b;
       color: #475569;
-      width: 22px;
-      user-select: none;
-      font-size: 0.85rem;
-      text-align: right;
-    }
-
-    .token-kw { color: #f43f5e; font-weight: 800; }
-    .token-fn { color: #a78bfa; font-weight: 800; }
-    .token-var { color: #38bdf8; font-weight: 800; }
-    .token-str { color: #fbbf24; }
-    .token-comment { color: #10b981; font-style: italic; }
-    .token-op { color: #f59e0b; font-weight: 900; }
-
-    /* Custom Input Tambahan Siswa */
-    .input-simulator-group {
-      background: rgba(30, 41, 59, 0.5);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-    .input-simulator-label {
-      font-size: 0.75rem;
-      color: #94a3b8;
-      font-weight: 700;
-    }
-    .input-simulator-field {
-      background: #020617;
-      border: 1.5px solid #334155;
-      color: #f8fafc;
-      padding: 0.5rem 0.75rem;
-      border-radius: 8px;
       font-family: var(--font-mono);
       font-size: 0.95rem;
-      font-weight: 800;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .input-simulator-field:focus {
-      border-color: var(--accent-amber);
+      line-height: 1.6;
+      padding: 0.75rem 0.4rem;
+      text-align: right;
+      user-select: none;
+      overflow: hidden;
+      white-space: pre-wrap;
     }
 
-    /* Tombol Aksi Eksekusi Editor */
+    /* Textarea Interaktif Bebas Ketik */
+    .editor-textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.6;
+      padding: 0.75rem 0.85rem;
+      resize: none;
+      white-space: pre;
+      overflow-wrap: normal;
+      overflow-x: auto;
+      tab-size: 4;
+      user-select: text;
+    }
+
+    /* Tombol Aksi Eksekusi */
     .editor-action-row {
       display: flex;
       gap: 0.5rem;
@@ -242,7 +220,7 @@
       color: white;
       border-radius: 12px;
       padding: 0.75rem;
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 900;
       cursor: pointer;
       display: flex;
@@ -258,7 +236,7 @@
     }
     .btn-run-code:active { transform: translateY(1px); }
 
-    .btn-reset-editor {
+    .btn-reset-code {
       background: #1e293b;
       border: 1.5px solid #475569;
       color: #cbd5e1;
@@ -271,34 +249,67 @@
       align-items: center;
       gap: 0.35rem;
     }
-    .btn-reset-editor:hover {
+    .btn-reset-code:hover {
       background: #334155;
       border-color: var(--accent-amber);
     }
 
-    /* Terminal Konsol Mini */
-    .editor-console {
+    /* Terminal Konsol Python Mini */
+    .terminal-console-box {
       background: #020617;
       border-top: 2px solid #1e293b;
       padding: 0.75rem 1rem;
       font-family: var(--font-mono);
       font-size: 0.85rem;
-      color: #38bdf8;
-      min-height: 80px;
-      max-height: 100px;
+      min-height: 110px;
+      max-height: 130px;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
     }
-    .console-tag {
-      font-size: 0.7rem;
+    .console-header-line {
+      display: flex;
+      justify-content: space-between;
       color: #64748b;
-      text-transform: uppercase;
+      font-size: 0.7rem;
       font-weight: 800;
+      text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 0.25rem;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 0.25rem;
+    }
+    .console-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+    .inline-terminal-input {
+      background: #090e1a;
+      border: 1.5px solid #38bdf8;
+      border-radius: 6px;
+      color: #fde68a;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 0.2rem 0.5rem;
+      outline: none;
+      width: 140px;
+    }
+    .btn-send-input {
+      background: #0284c7;
+      border: none;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
     /* ==========================================================================
-       PANEL KANAN: LIVE VISUAL PERAGA LAB
+       PANEL KANAN: LIVE VISUAL KANVAS LAB
        ========================================================================== */
     .visual-panel-card {
       background: radial-gradient(circle at 50% 30%, #1e293b 0%, #030712 100%);
@@ -315,7 +326,6 @@
       box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.7);
     }
 
-    /* Status Banner Dinamis */
     .visual-status-banner {
       background: rgba(2, 6, 23, 0.85);
       border: 1.5px solid var(--accent-amber);
@@ -333,7 +343,6 @@
       max-width: 90%;
     }
 
-    /* CONTAINER MODALITAS VISUAL KANAN */
     .visual-dynamic-canvas {
       width: 100%;
       flex: 1;
@@ -344,7 +353,7 @@
       margin: 1rem 0;
     }
 
-    /* 1. VISUAL MODE: PABRIK int(input()) */
+    /* 1. VISUAL: PABRIK int(input) */
     .factory-scene {
       display: flex;
       align-items: center;
@@ -460,7 +469,7 @@
       transform: scale(1.08);
     }
 
-    /* 2. VISUAL MODE: METERAN PITA len() */
+    /* 2. VISUAL: METERAN PITA len() */
     .meter-scene {
       display: flex;
       flex-direction: column;
@@ -482,7 +491,7 @@
       box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
     }
 
-    /* 3. VISUAL MODE: PERBANDINGAN 2 BARIS VS 1 BARIS JOHN */
+    /* 3. VISUAL: PERBANDINGAN 2 BARIS VS 1 BARIS JOHN */
     .compare-scene {
       display: flex;
       flex-direction: column;
@@ -492,7 +501,7 @@
       max-width: 460px;
     }
 
-    /* 4. VISUAL MODE: GERBANG ALARM print() ERROR */
+    /* 4. VISUAL: GERBANG ALARM print() ERROR */
     .gate-scene {
       display: flex;
       flex-direction: column;
@@ -502,7 +511,7 @@
       max-width: 440px;
     }
 
-    /* 5. VISUAL MODE: RADAR KOMENTAR (#) */
+    /* 5. VISUAL: RADAR KOMENTAR (#) */
     .radar-scene {
       display: flex;
       flex-direction: column;
@@ -525,7 +534,7 @@
       pointer-events: none;
     }
 
-    /* Quick Preset Chips di Bawah Visual */
+    /* Quick Chips di Bawah Visual */
     .quick-chips-row {
       display: flex;
       gap: 0.5rem;
@@ -570,9 +579,7 @@
       gap: 0.4rem;
       transition: all 0.2s ease;
     }
-    .tutor-drawer-toggle:hover {
-      transform: scale(1.05);
-    }
+    .tutor-drawer-toggle:hover { transform: scale(1.05); }
 
     .tutor-drawer-panel {
       position: fixed;
@@ -627,43 +634,43 @@
             Split Lab: Konstruksi Bersarang
           </h1>
           <p style="font-size: 0.78rem; color: #94a3b8; margin: 2px 0 0;">
-            Kiri: Python Code Editor &bull; Kanan: Live Visual Peraga Fisik
+            Ketik & Edit Kode Python Bebas di Panel Kiri &bull; Live Visual Interaktif di Panel Kanan
           </p>
         </div>
       </div>
       
       <div style="display: flex; align-items: center; gap: 0.5rem;">
-        <button id="btn-sound-toggle" class="btn-reset-editor" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+        <button id="btn-sound-toggle" class="btn-reset-code" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
           🔊 Suara: ON
         </button>
       </div>
     </header>
 
-    <!-- TOOLBAR PILIHAN TOPIK / PRESET MATERI -->
+    <!-- TOOLBAR PILIHAN TOPIK / TEMPLATE SINTAKS -->
     <div class="preset-toolbar">
-      <button class="preset-pill active" onclick="loadTopicPreset('bagasi')">
+      <button class="preset-pill active" onclick="loadTemplateToEditor('bagasi')">
         <span>🧳</span> 1. int(input) Bagasi Pesawat
       </button>
-      <button class="preset-pill" onclick="loadTopicPreset('survei')">
+      <button class="preset-pill" onclick="loadTemplateToEditor('survei')">
         <span>📏</span> 2. len(input) Survei Hotel
       </button>
-      <button class="preset-pill" onclick="loadTopicPreset('compare')">
+      <button class="preset-pill" onclick="loadTemplateToEditor('compare')">
         <span>⚡</span> 3. Bandingkan 2 Baris vs John
       </button>
-      <button class="preset-pill" onclick="loadTopicPreset('printerror')">
+      <button class="preset-pill" onclick="loadTemplateToEditor('printerror')">
         <span>🚫</span> 4. Uji print() Dilarang Masuk
       </button>
-      <button class="preset-pill" onclick="loadTopicPreset('komentar')">
+      <button class="preset-pill" onclick="loadTemplateToEditor('komentar')">
         <span>💬</span> 5. Radar Komentar (#)
       </button>
     </div>
 
     <!-- ===================================================================
-         SPLIT WORKBENCH: KIRI (EDITOR) | KANAN (LIVE VISUAL)
+         SPLIT WORKBENCH: KIRI (REAL EDITOR) | KANAN (LIVE VISUAL)
          =================================================================== -->
     <div class="split-workbench">
 
-      <!-- ==================== PANEL KIRI: EDITOR ==================== -->
+      <!-- ==================== PANEL KIRI: REAL PYTHON CODE EDITOR ==================== -->
       <div class="editor-card">
         
         <div class="editor-top-bar">
@@ -672,42 +679,44 @@
             <span class="dot dot-yellow"></span>
             <span class="dot dot-green"></span>
           </div>
-          <span class="editor-title" id="editor-file-title">main.py</span>
+          <span class="editor-title" id="editor-file-title">main.py (Bebas Diketik)</span>
           <span class="badge badge-emerald" style="font-size: 0.7rem;">Python 3</span>
         </div>
 
-        <div class="editor-body">
+        <div class="editor-workspace">
           
-          <!-- Area Kode Python dengan Nomor Baris -->
-          <div class="code-lines-wrapper" id="editor-lines-box">
-            <!-- Di-generate dinamis via JS sesuai topik -->
-          </div>
-
-          <!-- Parameter Input Cepat Siswa -->
-          <div class="input-simulator-group" id="input-control-box">
-            <label class="input-simulator-label" id="input-control-label">
-              ⌨️ Input Keyboard Pengguna (Nilai yang akan diketik):
-            </label>
-            <input type="text" id="sim-input-val" value="23" class="input-simulator-field">
+          <!-- REAL CODE EDITOR DENGAN LINE NUMBERS OTOMATIS -->
+          <div class="editor-container">
+            <div class="editor-gutter" id="editor-gutter">1
+2</div>
+            <textarea class="editor-textarea" id="code-editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
           </div>
 
           <!-- Tombol Eksekusi -->
           <div class="editor-action-row">
-            <button class="btn-run-code" id="btn-run-code" onclick="executeCurrentCode()">
+            <button class="btn-run-code" id="btn-run-code" onclick="runPythonEditorCode()">
               <span>▶️</span> Jalankan Kode (Run)
             </button>
-            <button class="btn-reset-editor" onclick="resetCurrentTopic()">
-              <span>↺</span> Reset
+            <button class="btn-reset-code" onclick="resetEditorCode()">
+              <span>↺</span> Reset Template
             </button>
           </div>
 
         </div>
 
-        <!-- Terminal Konsol Mini -->
-        <div class="editor-console">
-          <div class="console-tag">🖥️ Terminal Console:</div>
-          <div id="console-stream" style="color: #cbd5e1;">
-            >>> # Tekan 'Jalankan Kode' untuk melihat eksekusi dan animasi
+        <!-- Terminal Konsol Python Mini -->
+        <div class="terminal-console-box">
+          <div class="console-header-line">
+            <span>🖥️ Terminal Console Python</span>
+            <span id="terminal-status-tag">Ready</span>
+          </div>
+          <div id="terminal-output-body" style="color: #cbd5e1;">
+            >>> # Ketik kode di atas lalu klik 'Jalankan Kode'
+          </div>
+          <div id="terminal-input-prompt-row" class="console-input-row" style="display: none;">
+            <span style="color: #38bdf8;" id="terminal-prompt-text">Input:</span>
+            <input type="text" id="terminal-interactive-input" class="inline-terminal-input" value="23">
+            <button class="btn-send-input" onclick="submitTerminalInput()">Kirim ⏎</button>
           </div>
         </div>
 
@@ -719,11 +728,11 @@
         <div class="visual-status-banner" id="visual-status-banner">
           <span>💡</span>
           <span id="visual-status-text">
-            Siap dijalankan! Klik tombol <b>"Jalankan Kode (Run)"</b> di panel kiri.
+            Ketik atau ubah kode di panel kiri, lalu klik <b>"Jalankan Kode (Run)"</b>!
           </span>
         </div>
 
-        <!-- Kanvas Visual Dinamis Berdasarkan Topik -->
+        <!-- Kanvas Visual Dinamis Berdasarkan Hasil Parsing Kode -->
         <div class="visual-dynamic-canvas" id="canvas-area">
           
           <!-- Default View: Pabrik int(input) -->
@@ -735,14 +744,14 @@
                 <span class="badge-inner-title">MESIN DALAM: input()</span>
                 <div id="slot-inner-orb" style="min-height: 44px; display: flex; align-items: center;">
                   <div class="parcel-orb parcel-str" id="orb-string-val">
-                    <span>"23"</span> <span style="font-size: 0.65rem;">[str]</span>
+                    <span>"23"</span> <span style="font-size:0.65rem;">[str]</span>
                   </div>
                 </div>
               </div>
 
               <div id="slot-outer-orb" style="min-height: 44px; display: flex; align-items: center;">
                 <div class="parcel-orb parcel-int" id="orb-int-val" style="display: none;">
-                  <span>23</span> <span style="font-size: 0.65rem;">[int]</span>
+                  <span>23</span> <span style="font-size:0.65rem;">[int]</span>
                 </div>
               </div>
             </div>
@@ -762,11 +771,11 @@
 
         </div>
 
-        <!-- Quick Chips Preset Cepat Sekali Klik -->
+        <!-- Quick Chips Cepat Sekali Klik -->
         <div class="quick-chips-row" id="chips-container">
-          <button class="chip-btn" onclick="quickFillInput('23')">🧳 23 kg</button>
-          <button class="chip-btn" onclick="quickFillInput('15')">💼 15 kg</button>
-          <button class="chip-btn" onclick="quickFillInput('5')">🎒 5 kg</button>
+          <button class="chip-btn" onclick="quickInsertInput('23')">🧳 23 kg</button>
+          <button class="chip-btn" onclick="quickInsertInput('15')">💼 15 kg</button>
+          <button class="chip-btn" onclick="quickInsertInput('5')">🎒 5 kg</button>
         </div>
 
       </div>
@@ -788,27 +797,27 @@
         
         <div style="background: rgba(30, 41, 59, 0.6); padding: 0.65rem 0.85rem; border-radius: 10px; border-left: 3px solid #f59e0b;">
           <b style="color: #fbbf24;">1. int(input) Bagasi:</b><br>
-          <i>Ajak anak:</i> "Lihat kode di kiri. Klik Run, lalu tonton mesin kanan! input() tangkap teks, lalu int() potong kutipnya jadi angka hijau!"
+          <i>Suruh anak ketik:</i> Ubah nama variabel <code>massa</code> jadi <code>berat</code> di editor, lalu klik Run. Tunjukkan kotak di kanan berubah namanya!
         </div>
 
         <div style="background: rgba(30, 41, 59, 0.6); padding: 0.65rem 0.85rem; border-radius: 10px; border-left: 3px solid #38bdf8;">
           <b style="color: #7dd3fc;">2. len(input) Survei:</b><br>
-          <i>Ajak anak:</i> "Ganti ke topik 2. Kali ini kita pasang meteran len(). Kata apa pun yang kamu ketik di kiri langsung ditarik pita meterannya di kanan!"
+          <i>Suruh anak ketik:</i> Tulis kalimat apa saja di terminal masukan, meteran di kanan langsung mengukur panjang hurufnya!
         </div>
 
         <div style="background: rgba(30, 41, 59, 0.6); padding: 0.65rem 0.85rem; border-radius: 10px; border-left: 3px solid #10b981;">
           <b style="color: #34d399;">3. Bandingkan 2 Baris vs John:</b><br>
-          <i>Ajak anak:</i> "Lihat bedanya: Cara lama harus buka-tutup kotak 2 kali. Cara John 1 baris bersarang langsung meluncur kilat!"
+          <i>Ajak anak:</i> "Lihat bedanya: Cara lama harus bolak-balik buka kotak 2 kali. Cara John 1 baris bersarang langsung meluncur kilat!"
         </div>
 
         <div style="background: rgba(30, 41, 59, 0.6); padding: 0.65rem 0.85rem; border-radius: 10px; border-left: 3px solid #f43f5e;">
           <b style="color: #fda4af;">4. Uji print() Error:</b><br>
-          <i>Tantang anak:</i> "Kenapa print() dilarang masuk ke int()? Karena print() cuma nyorot layar, tidak bawa paket hasil!"
+          <i>Tantang anak:</i> Ketik <code>hasil = int(print('Halo'))</code> di editor, klik Run! Tunjukkan alarm merah berbunyi karena print() menghasilkan None!
         </div>
 
         <div style="background: rgba(30, 41, 59, 0.6); padding: 0.65rem 0.85rem; border-radius: 10px; border-left: 3px solid #a78bfa;">
           <b style="color: #c4b5fd;">5. Radar Komentar (#):</b><br>
-          <i>Ajak anak:</i> "Tanda # adalah catatan rahasia kita. Komputer pura-pura buta dan melewatkannya!"
+          <i>Ajak anak:</i> Ketik tanda <code>#</code> di baris mana saja, tonton laser radar melewatinya!
         </div>
 
         <hr style="border-color: #334155;">
@@ -825,12 +834,12 @@
 
     <!-- Footer -->
     <footer style="text-align: center; padding: 1rem 0; font-size: 0.8rem; color: #64748b;">
-      Algo Visual Lab &bull; Split Workbench Pertemuan 4: Konstruksi Bersarang &bull; Algonova
+      Algo Visual Lab &bull; Real Python Editor Pertemuan 4: Konstruksi Bersarang &bull; Algonova
     </footer>
 
   </div>
 
-  <!-- SCRIPT LOGIKA SPLIT EDITOR & PERAGA VISUAL -->
+  <!-- SCRIPT LOGIKA REAL CODE EDITOR, SYNTAX PARSER & WEB AUDIO -->
   <script>
     /* ==========================================================================
        AUDIO SYNTHESIZER
@@ -903,141 +912,149 @@
     }
 
     /* ==========================================================================
-       DATA PRESET 5 TOPIK
+       REAL CODE EDITOR ENGINE (<textarea> DENGAN SINKRONISASI LINE NUMBERS & TAB)
        ========================================================================== */
-    const TOPIC_PRESETS = {
+    const codeEditor = document.getElementById('code-editor');
+    const editorGutter = document.getElementById('editor-gutter');
+
+    function updateLineNumbers() {
+      const lines = codeEditor.value.split('\n');
+      editorGutter.textContent = lines.map((_, i) => i + 1).join('\n');
+    }
+
+    codeEditor.addEventListener('input', updateLineNumbers);
+
+    // Sinkronisasi Scroll antara Textarea dan Gutter Nomor Baris
+    codeEditor.addEventListener('scroll', () => {
+      editorGutter.scrollTop = codeEditor.scrollTop;
+    });
+
+    // Dukungan Tombol TAB di dalam Textarea (Indentation 4 spasi)
+    codeEditor.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = codeEditor.selectionStart;
+        const end = codeEditor.selectionEnd;
+        codeEditor.value = codeEditor.value.substring(0, start) + '    ' + codeEditor.value.substring(end);
+        codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
+        updateLineNumbers();
+      } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        runPythonEditorCode();
+      }
+    });
+
+    /* ==========================================================================
+       DATA TEMPLATE PRESET TOPIK ALGONOVA
+       ========================================================================== */
+    const TEMPLATES = {
       bagasi: {
         title: 'bagasi.py',
-        inputLabel: '⌨️ Input Berat Bagasi (kg):',
-        defaultInput: '23',
+        code: `massa = int(input('Berat bagasi (kg): '))\nprint('Tersimpan di kotak massa:', massa)`,
         chips: [
           { label: '🧳 23 kg', val: '23' },
           { label: '💼 15 kg', val: '15' },
           { label: '🎒 5 kg', val: '5' }
         ],
-        codeLines: [
-          `<span class="line-num">1</span> <span class="token-var">massa</span> <span class="token-op">=</span> <span class="token-fn">int</span>(<span class="token-fn">input</span>(<span class="token-str">'Berat bagasi: '</span>))`,
-          `<span class="line-num">2</span> <span class="token-fn">print</span>(<span class="token-str">'Tersimpan di kotak massa:'</span>, <span class="token-var">massa</span>)`
-        ],
-        statusHint: 'Klik Jalankan Kode untuk melihat mesin input() dan int() memproses muatan bagasi!'
+        hint: 'Ketik atau ubah kode di kiri secara bebas, lalu klik Jalankan Kode (Run)!'
       },
       survei: {
         title: 'survei_hotel.py',
-        inputLabel: '⌨️ Input Jawaban Survei Pengunjung:',
-        defaultInput: 'Kamar sangat bersih',
+        code: `panjang = len(input('Ulasan hotel: '))\nprint('Panjang ulasan:', panjang)`,
         chips: [
           { label: '✨ Kamar bersih', val: 'Kamar sangat bersih' },
           { label: '🍔 Makanan enak!', val: 'Makanan enak!' },
-          { label: '🏊 Kolam renang sejuk', val: 'Kolam renang sejuk' }
+          { label: '🏊 Kolam sejuk', val: 'Kolam renang sejuk' }
         ],
-        codeLines: [
-          `<span class="line-num">1</span> <span class="token-var">panjang</span> <span class="token-op">=</span> <span class="token-fn">len</span>(<span class="token-fn">input</span>(<span class="token-str">'Ulasan Anda: '</span>))`,
-          `<span class="line-num">2</span> <span class="token-fn">print</span>(<span class="token-str">'Total huruf:'</span>, <span class="token-var">panjang</span>)`
-        ],
-        statusHint: 'Meteran len() akan langsung mengukur panjang kalimat yang kamu masukkan!'
+        hint: 'Fungsi len() akan langsung mengukur panjang string hasil input()'
       },
       compare: {
-        title: 'perbandingan.py',
-        inputLabel: '⌨️ Nilai Data:',
-        defaultInput: '50',
+        title: 'bandingkan_john.py',
+        code: `# Cara 1 Baris John (Bersarang):\nmassa = int(input('Berat: '))\n\n# Cara Lama (2 Baris):\n# massa = input('Berat: ')\n# massa = int(massa)`,
         chips: [
-          { label: '🐢 Cara 2 Baris', val: 'slow' },
-          { label: '⚡ Cara John 1 Baris', val: 'fast' }
+          { label: '⚡ Jalankan 1 Baris John', val: 'john' },
+          { label: '🐢 Jalankan 2 Baris Lama', val: 'slow' }
         ],
-        codeLines: [
-          `<span class="line-num">1</span> <span class="token-comment"># Cara Lama (2 Baris):</span>`,
-          `<span class="line-num">2</span> <span class="token-var">massa</span> <span class="token-op">=</span> <span class="token-fn">input</span>()`,
-          `<span class="line-num">3</span> <span class="token-var">massa</span> <span class="token-op">=</span> <span class="token-fn">int</span>(<span class="token-var">massa</span>)`,
-          `<span class="line-num">4</span> <span class="token-comment"># Cara John (1 Baris Bersarang):</span>`,
-          `<span class="line-num">5</span> <span class="token-var">massa</span> <span class="token-op">=</span> <span class="token-fn">int</span>(<span class="token-fn">input</span>())`
-        ],
-        statusHint: 'Pilih apakah ingin menjalankan simulasi Cara Lama (2 baris) atau Cara John (1 baris)!'
+        hint: 'Bandingkan efisiensi kode 1 baris John vs cara lama 2 baris!'
       },
       printerror: {
-        title: 'uji_error.py',
-        inputLabel: '⌨️ Uji Eksperimen Sintaks:',
-        defaultInput: 'Halo',
+        title: 'uji_print_error.py',
+        code: `# Eksperimen: Apa yang terjadi jika print() disarangkan?\nhasil = int(print('Halo'))`,
         chips: [
-          { label: '⛔ Uji: int(print())', val: 'print' },
-          { label: '✅ Uji: int(input())', val: 'input' }
+          { label: '⛔ Uji print() (Error)', val: 'print' },
+          { label: '✅ Uji input() (Valid)', val: 'input' }
         ],
-        codeLines: [
-          `<span class="line-num">1</span> <span class="token-comment"># Apakah print() boleh disarangkan ke int()?</span>`,
-          `<span class="line-num">2</span> <span class="token-var">hasil</span> <span class="token-op">=</span> <span class="token-fn">int</span>(<span class="token-fn">print</span>(<span class="token-str">'Halo'</span>)) <span class="token-comment"># ❌ BAHAYA</span>`
-        ],
-        statusHint: 'Jalankan untuk membuktikan mengapa print() ditolak oleh int()!'
+        hint: 'Klik Run untuk membuktikan mengapa print() tidak bisa disarangkan!'
       },
       komentar: {
-        title: 'radar_diskon.py',
-        inputLabel: '⌨️ Harga Paket Tur:',
-        defaultInput: '500000',
+        title: 'diskon_radar.py',
+        code: `harga = int(input('Harga tur: '))\n# Catatan: Diskon 5% liburan akhir pekan\ncashback = harga * 0.05\nprint('Cashback:', cashback)`,
         chips: [
           { label: '🏷️ 500.000', val: '500000' },
           { label: '🏷️ 1.000.000', val: '1000000' }
         ],
-        codeLines: [
-          `<span class="line-num">1</span> <span class="token-var">harga</span> <span class="token-op">=</span> <span class="token-fn">int</span>(<span class="token-fn">input</span>(<span class="token-str">'Harga: '</span>))`,
-          `<span class="line-num">2</span> <span class="token-comment"># Diskon spesial akhir pekan 5%</span>`,
-          `<span class="line-num">3</span> <span class="token-fn">print</span>(<span class="token-str">'Cashback:'</span>, <span class="token-var">harga</span> <span class="token-op">*</span> 0.05)`
-        ],
-        statusHint: 'Perhatikan radar laser interpreter: Baris 2 dengan tanda # akan dilewati 100%!'
+        hint: 'Perhatikan radar laser melewati baris bertanda # tanpa mengeksekusinya!'
       }
     };
 
-    let currentTopic = 'bagasi';
-    let isExecuting = false;
+    let activeTopic = 'bagasi';
 
-    // Load Topik ke Editor & Kanvas Kanan
-    function loadTopicPreset(topicKey) {
-      currentTopic = topicKey;
+    function loadTemplateToEditor(topicKey) {
+      activeTopic = topicKey;
 
-      // Update Toolbar Pills
       document.querySelectorAll('.preset-pill').forEach(p => p.classList.remove('active'));
       event?.currentTarget?.classList.add('active');
 
-      const data = TOPIC_PRESETS[topicKey];
-      document.getElementById('editor-file-title').textContent = data.title;
-      document.getElementById('input-control-label').textContent = data.inputLabel;
-      document.getElementById('sim-input-val').value = data.defaultInput;
-      document.getElementById('visual-status-text').textContent = data.statusHint;
+      const data = TEMPLATES[topicKey];
+      document.getElementById('editor-file-title').textContent = data.title + ' (Bebas Diketik)';
+      codeEditor.value = data.code;
+      updateLineNumbers();
 
-      // Render Baris Kode di Editor
-      const linesBox = document.getElementById('editor-lines-box');
-      linesBox.innerHTML = data.codeLines.map((line, idx) => `
-        <div class="code-line" id="code-line-${idx + 1}">${line}</div>
-      `).join('');
+      document.getElementById('visual-status-text').textContent = data.hint;
 
-      // Render Chips Cepat di Panel Kanan
+      // Update Chips
       const chipsRow = document.getElementById('chips-container');
       chipsRow.innerHTML = data.chips.map(c => `
-        <button class="chip-btn" onclick="quickFillInput('${c.val}')">${c.label}</button>
+        <button class="chip-btn" onclick="quickInsertInput('${c.val}')">${c.label}</button>
       `).join('');
 
-      // Render Tampilan Awal Kanvas Kanan
-      renderVisualCanvasInitial(topicKey);
+      renderInitialCanvas(topicKey);
       sound.playTone(480, 'sine', 0.04, 0.08);
     }
 
-    function quickFillInput(val) {
-      if (currentTopic === 'compare') {
-        runCompareMode(val);
-        return;
-      }
-      if (currentTopic === 'printerror') {
-        const line2 = document.getElementById('code-line-2');
-        if (val === 'print') {
-          line2.innerHTML = `<span class="line-num">2</span> <span class="token-var">hasil</span> <span class="token-op">=</span> <span class="token-fn">int</span>(<span class="token-fn">print</span>(<span class="token-str">'Halo'</span>)) <span class="token-comment"># ❌ BAHAYA</span>`;
-        } else {
-          line2.innerHTML = `<span class="line-num">2</span> <span class="token-var">hasil</span> <span class="token-op">=</span> <span class="token-fn">int</span>(<span class="token-fn">input</span>(<span class="token-str">'100'</span>)) <span class="token-comment"># ✅ AMAN</span>`;
-        }
-        executeCurrentCode();
-        return;
-      }
-      document.getElementById('sim-input-val').value = val;
-      executeCurrentCode();
+    function resetEditorCode() {
+      loadTemplateToEditor(activeTopic);
     }
 
-    function renderVisualCanvasInitial(topicKey) {
+    function quickInsertInput(val) {
+      if (activeTopic === 'compare') {
+        if (val === 'slow') {
+          codeEditor.value = `# Cara Lama (2 Baris):\nmassa = input('Berat: ')\nmassa = int(massa)`;
+        } else {
+          codeEditor.value = `# Cara 1 Baris John:\nmassa = int(input('Berat: '))`;
+        }
+        updateLineNumbers();
+        runPythonEditorCode();
+        return;
+      }
+      if (activeTopic === 'printerror') {
+        if (val === 'print') {
+          codeEditor.value = `# Eksperimen: Apa yang terjadi jika print() disarangkan?\nhasil = int(print('Halo'))`;
+        } else {
+          codeEditor.value = `# Eksperimen: input() valid\nhasil = int(input('100'))`;
+        }
+        updateLineNumbers();
+        runPythonEditorCode();
+        return;
+      }
+
+      // Isi input interaktif terminal
+      const tInput = document.getElementById('terminal-interactive-input');
+      if (tInput) tInput.value = val;
+      submitTerminalInput();
+    }
+
+    function renderInitialCanvas(topicKey) {
       const canvas = document.getElementById('canvas-area');
 
       if (topicKey === 'bagasi') {
@@ -1063,7 +1080,7 @@
             <div class="result-variable-box" id="pabrik-storage-box">
               <span class="badge badge-sky" style="font-size:0.75rem;">Kotak Variabel</span>
               <div id="label-box-number" style="font-family:var(--font-mono); font-size:1.8rem; font-weight:900; color:#34d399;">23</div>
-              <span style="font-family:var(--font-mono); font-weight:800; color:#f8fafc;">massa</span>
+              <span style="font-family:var(--font-mono); font-weight:800; color:#f8fafc;" id="label-var-name">massa</span>
             </div>
           </div>
         `;
@@ -1086,7 +1103,7 @@
             <div id="compare-box-anim" style="width:100%; background:#1e293b; border:2.5px solid #38bdf8; border-radius:18px; padding:1.25rem; text-align:center; min-height:120px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:0.5rem;">
               <span class="badge badge-sky" id="compare-badge-mode">Kotak massa</span>
               <div id="compare-val-display" style="font-family:var(--font-mono); font-size:1.8rem; font-weight:900; color:#34d399;">50</div>
-              <span id="compare-desc-text" style="font-size:0.8rem; color:#94a3b8;">Klik chip 'Cara 2 Baris' atau 'Cara John' di bawah!</span>
+              <span id="compare-desc-text" style="font-size:0.8rem; color:#94a3b8;">Ubah kode di editor dan klik Run!</span>
             </div>
           </div>
         `;
@@ -1115,71 +1132,170 @@
       }
     }
 
-    // Eksekusi Kode Berdasarkan Topik Aktif
-    function executeCurrentCode() {
-      if (isExecuting) return;
-      isExecuting = true;
+    /* ==========================================================================
+       MINI PYTHON SYNTAX PARSER & RUNNER
+       Membaca teks bebas apa pun yang diketik di editor dan menjalankan animasinya!
+       ========================================================================== */
+    let pendingRunState = null;
 
-      const consoleStream = document.getElementById('console-stream');
-      const inputVal = document.getElementById('sim-input-val').value.trim() || '23';
+    function runPythonEditorCode() {
+      const rawCode = codeEditor.value;
+      const consoleOut = document.getElementById('terminal-output-body');
+      const promptRow = document.getElementById('terminal-input-prompt-row');
+      const promptText = document.getElementById('terminal-prompt-text');
+      const statusTag = document.getElementById('terminal-status-tag');
+      const statusBanner = document.getElementById('visual-status-text');
 
       sound.playRunStart();
+      promptRow.style.display = 'none';
+      statusTag.textContent = 'Running...';
+      statusTag.className = 'badge badge-amber';
 
-      if (currentTopic === 'bagasi') {
-        // Highlighting baris 1
-        const line1 = document.getElementById('code-line-1');
-        const line2 = document.getElementById('code-line-2');
-        line1?.classList.add('active-executing');
-        line2?.classList.remove('active-executing');
+      // 1. Deteksi Error: int(print(...)) atau len(print(...))
+      if (/int\s*\(\s*print\s*\(/.test(rawCode) || /len\s*\(\s*print\s*\(/.test(rawCode)) {
+        renderInitialCanvas('printerror');
+        const gateSlot = document.getElementById('gate-slot-text');
+        const alarmBox = document.getElementById('gate-alarm-box');
+        if (gateSlot) gateSlot.textContent = "print(...)";
+        if (alarmBox) {
+          alarmBox.style.background = 'rgba(244, 63, 94, 0.15)';
+          alarmBox.style.borderColor = '#f43f5e';
+          alarmBox.style.color = '#fda4af';
+          alarmBox.innerHTML = `⛔ <b>TypeError:</b> print() menghasilkan None! Tidak bisa disarangkan!`;
+        }
+        statusBanner.innerHTML = `❌ <b>ERROR DITEMUKAN:</b> Fungsi print() tidak menghasilkan nilai return!`;
+        consoleOut.innerHTML = `<span style="color:#f43f5e; font-weight:800;">TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'</span>`;
+        statusTag.textContent = 'Error';
+        statusTag.className = 'badge badge-rose';
+        sound.playError();
+        return;
+      }
 
-        const statusBanner = document.getElementById('visual-status-text');
-        statusBanner.innerHTML = `<span>1️⃣</span> <b>input():</b> Menangkap teks dari keyboard &rarr; <b style="color:#fbbf24">"${inputVal}"</b>`;
+      // 2. Deteksi Alur 2 Baris vs 1 Baris (Cara Lama vs John)
+      if (rawCode.includes('input(') && rawCode.includes('int(') && !rawCode.includes('int(input(')) {
+        renderInitialCanvas('compare');
+        runCompareModeAnimation('slow');
+        return;
+      }
 
+      // 3. Deteksi Konstruksi Bersarang: int(input(...))
+      const matchIntInput = rawCode.match(/([a-zA-Z0-9_]+)\s*=\s*int\s*\(\s*input\s*\((.*?)\)\s*\)/);
+      if (matchIntInput) {
+        renderInitialCanvas('bagasi');
+        const varName = matchIntInput[1];
+        const promptLabel = matchIntInput[2].replace(/['"]/g, '').trim() || 'Input:';
+
+        // Tampilkan prompt input interaktif di terminal konsol!
+        promptText.textContent = promptLabel;
+        promptRow.style.display = 'flex';
+        consoleOut.innerHTML = `>>> Menunggu masukan: <b>${promptLabel}</b>`;
+        statusBanner.innerHTML = `⌨️ Ketik nilai di terminal bawah lalu klik <b>Kirim ⏎</b> (atau pakai chips di kanan)!`;
+
+        pendingRunState = {
+          type: 'int_input',
+          varName: varName,
+          prompt: promptLabel
+        };
+        return;
+      }
+
+      // 4. Deteksi Konstruksi Bersarang: len(input(...))
+      const matchLenInput = rawCode.match(/([a-zA-Z0-9_]+)\s*=\s*len\s*\(\s*input\s*\((.*?)\)\s*\)/);
+      if (matchLenInput) {
+        renderInitialCanvas('survei');
+        const varName = matchLenInput[1];
+        const promptLabel = matchLenInput[2].replace(/['"]/g, '').trim() || 'Teks:';
+
+        promptText.textContent = promptLabel;
+        promptRow.style.display = 'flex';
+        document.getElementById('terminal-interactive-input').value = 'Pelayanan hotel sangat memuaskan';
+        consoleOut.innerHTML = `>>> Menunggu masukan: <b>${promptLabel}</b>`;
+        statusBanner.innerHTML = `⌨️ Ketik ulasan di terminal lalu klik <b>Kirim ⏎</b>!`;
+
+        pendingRunState = {
+          type: 'len_input',
+          varName: varName,
+          prompt: promptLabel
+        };
+        return;
+      }
+
+      // 5. Deteksi Baris Komentar (#)
+      if (rawCode.includes('#')) {
+        renderInitialCanvas('komentar');
+        fireRadarLaserAnimation();
+        return;
+      }
+
+      // 6. Default Fallback Parser
+      consoleOut.innerHTML = `>>> Kode dieksekusi dengan sukses.<br><span style="color:#34d399;">✔ Program selesai tanpa error.</span>`;
+      statusTag.textContent = 'Success';
+      statusTag.className = 'badge badge-emerald';
+      statusBanner.innerHTML = `✨ Kode berhasil dijalankan! Coba gunakan template di toolbar atas untuk materi spesifik.`;
+      sound.playSuccess();
+    }
+
+    // Submit Input dari Terminal Konsol
+    function submitTerminalInput() {
+      const inputEl = document.getElementById('terminal-interactive-input');
+      const val = inputEl.value.trim() || '23';
+      const promptRow = document.getElementById('terminal-input-prompt-row');
+      promptRow.style.display = 'none';
+
+      const consoleOut = document.getElementById('terminal-output-body');
+      const statusTag = document.getElementById('terminal-status-tag');
+      const statusBanner = document.getElementById('visual-status-text');
+
+      if (pendingRunState && pendingRunState.type === 'int_input') {
+        const varName = pendingRunState.varName;
         const pOuter = document.getElementById('pabrik-outer');
         const pInner = document.getElementById('pabrik-inner');
         const orbStr = document.getElementById('orb-string-val');
         const orbInt = document.getElementById('orb-int-val');
         const storageBox = document.getElementById('pabrik-storage-box');
         const labelBoxNum = document.getElementById('label-box-number');
+        const labelVarName = document.getElementById('label-var-name');
 
+        if (labelVarName) labelVarName.textContent = varName;
         orbInt.style.display = 'none';
         storageBox.classList.remove('box-land');
         labelBoxNum.textContent = '-';
 
         pInner.classList.add('active-glow');
-        orbStr.innerHTML = `<span>"${inputVal}"</span> <span style="font-size:0.65rem;">[str]</span>`;
+        orbStr.innerHTML = `<span>"${val}"</span> <span style="font-size:0.65rem;">[str]</span>`;
+        statusBanner.innerHTML = `<span>1️⃣</span> <b>input():</b> Menangkap teks string &rarr; <b style="color:#fbbf24">"${val}"</b>`;
+        sound.playTone(400, 'triangle', 0.08, 0.12);
 
         setTimeout(() => {
           pInner.classList.remove('active-glow');
           pOuter.classList.add('active-glow');
           sound.playConvert();
-          statusBanner.innerHTML = `<span>2️⃣</span> <b>int():</b> Memotong kutip string &rarr; Jadi angka bulat murni <b style="color:#34d399">${inputVal}</b>!`;
+          statusBanner.innerHTML = `<span>2️⃣</span> <b>int():</b> Memotong kutip string &rarr; Jadi angka bulat murni <b style="color:#34d399">${val}</b>!`;
 
           orbInt.style.display = 'inline-flex';
-          orbInt.innerHTML = `<span>${inputVal}</span> <span style="font-size:0.65rem;">[int]</span>`;
+          orbInt.innerHTML = `<span>${val}</span> <span style="font-size:0.65rem;">[int]</span>`;
 
           setTimeout(() => {
             pOuter.classList.remove('active-glow');
             storageBox.classList.add('box-land');
-            labelBoxNum.textContent = inputVal;
-            line1?.classList.remove('active-executing');
-            line2?.classList.add('active-executing');
+            labelBoxNum.textContent = val;
 
-            statusBanner.innerHTML = `🎉 <b>Selesai:</b> Angka <b style="color:#34d399">${inputVal}</b> tersimpan di kotak variabel <code>massa</code>!`;
-            consoleStream.innerHTML = `>>> Berat bagasi: ${inputVal}<br><b style="color:#f8fafc;">Tersimpan di kotak massa: ${inputVal}</b>`;
+            statusBanner.innerHTML = `🎉 <b>Selesai:</b> Angka <b style="color:#34d399">${val}</b> tersimpan di kotak variabel <code>${varName}</code>!`;
+            consoleOut.innerHTML = `>>> ${pendingRunState.prompt} ${val}<br><b style="color:#f8fafc;">Tersimpan di kotak ${varName}: ${val}</b>`;
+            statusTag.textContent = 'Success';
+            statusTag.className = 'badge badge-emerald';
             sound.playSuccess();
-            isExecuting = false;
           }, 650);
 
         }, 750);
 
-      } else if (currentTopic === 'survei') {
+      } else if (pendingRunState && pendingRunState.type === 'len_input') {
+        const varName = pendingRunState.varName;
         const txtPreview = document.getElementById('txt-meter-preview');
         const txtCount = document.getElementById('txt-meter-count');
-        const statusBanner = document.getElementById('visual-status-text');
 
-        txtPreview.textContent = `"${inputVal}"`;
-        const lenVal = inputVal.length;
+        txtPreview.textContent = `"${val}"`;
+        const lenVal = val.length;
         txtCount.textContent = `${lenVal} Huruf`;
         txtCount.style.transform = 'scale(1.25)';
         setTimeout(() => txtCount.style.transform = 'scale(1)', 200);
@@ -1187,103 +1303,53 @@
         sound.playTone(600, 'sine', 0.05, 0.1);
         setTimeout(() => sound.playTone(850, 'triangle', 0.1, 0.15), 50);
 
-        statusBanner.innerHTML = `📏 Meteran <code>len()</code> menghitung: teks berisi <b>${lenVal} karakter</b>!`;
-        consoleStream.innerHTML = `>>> Ulasan Anda: ${inputVal}<br><b style="color:#f8fafc;">Total huruf: ${lenVal}</b>`;
-        isExecuting = false;
-
-      } else if (currentTopic === 'compare') {
-        runCompareMode('fast');
-
-      } else if (currentTopic === 'printerror') {
-        const line2 = document.getElementById('code-line-2');
-        const isError = line2.innerText.includes('print');
-        const gateSlot = document.getElementById('gate-slot-text');
-        const alarmBox = document.getElementById('gate-alarm-box');
-        const statusBanner = document.getElementById('visual-status-text');
-
-        if (isError) {
-          gateSlot.textContent = "print('Halo')";
-          gateSlot.style.color = '#f43f5e';
-          alarmBox.style.background = 'rgba(244, 63, 94, 0.15)';
-          alarmBox.style.borderColor = '#f43f5e';
-          alarmBox.style.color = '#fda4af';
-          alarmBox.innerHTML = `⛔ <b>TypeError:</b> print() tidak mengembalikan nilai (None)! int() menolaknya!`;
-          statusBanner.innerHTML = `❌ <b>ERROR DITEMUKAN:</b> Fungsi print() tidak boleh dimasukkan ke dalam int()!`;
-          consoleStream.innerHTML = `<span style="color:#f43f5e;">TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'</span>`;
-          sound.playError();
-        } else {
-          gateSlot.textContent = "input('100')";
-          gateSlot.style.color = '#34d399';
-          alarmBox.style.background = 'rgba(16, 185, 129, 0.15)';
-          alarmBox.style.borderColor = '#10b981';
-          alarmBox.style.color = '#6ee7b7';
-          alarmBox.innerHTML = `✅ <b>VALID!</b> input() membawa string '100', int() mengubahnya jadi 100!`;
-          statusBanner.innerHTML = `🎉 <b>BERHASIL:</b> input() menghasilkan nilai balik yang sah!`;
-          consoleStream.innerHTML = `>>> input('100') &rarr; <b>100</b>`;
-          sound.playSuccess();
-        }
-        isExecuting = false;
-
-      } else if (currentTopic === 'komentar') {
-        fireRadarBeam();
+        statusBanner.innerHTML = `📏 Meteran <code>len()</code> mengukur teks <b>${lenVal} karakter</b>! Tersimpan di <code>${varName}</code>.`;
+        consoleOut.innerHTML = `>>> ${pendingRunState.prompt} ${val}<br><b style="color:#f8fafc;">${varName} = ${lenVal}</b>`;
+        statusTag.textContent = 'Success';
+        statusTag.className = 'badge badge-emerald';
       }
     }
 
-    // Logika Perbandingan 2 Baris vs 1 Baris
-    function runCompareMode(mode) {
-      const boxAnim = document.getElementById('compare-box-anim');
+    function runCompareModeAnimation(mode) {
       const badgeMode = document.getElementById('compare-badge-mode');
       const valDisplay = document.getElementById('compare-val-display');
       const descText = document.getElementById('compare-desc-text');
       const statusBanner = document.getElementById('visual-status-text');
-      const consoleStream = document.getElementById('console-stream');
+      const consoleOut = document.getElementById('terminal-output-body');
+      const statusTag = document.getElementById('terminal-status-tag');
 
-      if (mode === 'slow') {
-        badgeMode.className = 'badge badge-amber';
-        badgeMode.textContent = 'Cara 2 Baris (Lambat)';
-        statusBanner.innerHTML = `🐢 <b>Langkah 1:</b> Simpan teks "50" ke kotak massa...`;
-        valDisplay.textContent = '"50"';
-        valDisplay.style.color = '#fbbf24';
-        descText.textContent = 'Langkah 1: Kotak dibuka & simpan teks';
-        sound.playTone(320, 'sine', 0.1, 0.1);
+      badgeMode.className = 'badge badge-amber';
+      badgeMode.textContent = 'Cara 2 Baris (Lambat)';
+      statusBanner.innerHTML = `🐢 <b>Langkah 1:</b> Simpan teks "50" ke kotak massa...`;
+      valDisplay.textContent = '"50"';
+      valDisplay.style.color = '#fbbf24';
+      descText.textContent = 'Langkah 1: Kotak dibuka & simpan teks string';
+      sound.playTone(320, 'sine', 0.1, 0.1);
 
-        setTimeout(() => {
-          statusBanner.innerHTML = `🐢 <b>Langkah 2:</b> Buka kotak lagi, ambil "50", ubah jadi angka 50, simpan lagi!`;
-          valDisplay.textContent = '50';
-          valDisplay.style.color = '#34d399';
-          descText.textContent = 'Langkah 2: Kotak dibuka lagi untuk ditimpa angka';
-          sound.playTone(450, 'triangle', 0.1, 0.15);
-          consoleStream.innerHTML = `>>> massa = input() # simpan '50'<br>>>> massa = int(massa) # buka lagi & timpa 50`;
-          isExecuting = false;
-        }, 1000);
-
-      } else {
-        badgeMode.className = 'badge badge-emerald';
-        badgeMode.textContent = 'Cara John (1 Baris Bersarang)';
-        statusBanner.innerHTML = `⚡ <b>Cara John:</b> Sekali jalan! Langsung masuk kotak sebagai angka 50 murni!`;
+      setTimeout(() => {
+        statusBanner.innerHTML = `🐢 <b>Langkah 2:</b> Buka kotak lagi, ubah jadi integer 50, simpan lagi!`;
         valDisplay.textContent = '50';
         valDisplay.style.color = '#34d399';
-        descText.textContent = '1 Gerakan mulus: Lebih cepat, rapi, dan hemat memori!';
-        sound.playSuccess();
-        consoleStream.innerHTML = `>>> massa = int(input()) # langsung jadi integer 50!`;
-        isExecuting = false;
-      }
+        descText.textContent = 'Langkah 2: Kotak dibuka kedua kalinya untuk ditimpa angka';
+        sound.playTone(450, 'triangle', 0.1, 0.15);
+        consoleOut.innerHTML = `>>> massa = input() # simpan string<br>>>> massa = int(massa) # buka kotak lagi untuk ditimpa`;
+        statusTag.textContent = 'Completed';
+        statusTag.className = 'badge badge-amber';
+      }, 1000);
     }
 
-    // Laser Beam Radar Komentar
-    function fireRadarBeam() {
+    function fireRadarLaserAnimation() {
       const beam = document.getElementById('laser-beam');
       const l1 = document.getElementById('rad-line-1');
       const l2 = document.getElementById('rad-line-2');
       const l3 = document.getElementById('rad-line-3');
       const statusBanner = document.getElementById('visual-status-text');
-      const consoleStream = document.getElementById('console-stream');
+      const consoleOut = document.getElementById('terminal-output-body');
+      const statusTag = document.getElementById('terminal-status-tag');
 
       beam.style.opacity = '1';
       beam.style.top = '10px';
       l1.style.background = 'rgba(56, 189, 248, 0.25)';
-      l2.style.background = 'transparent';
-      l3.style.background = 'transparent';
       sound.playLaser();
       statusBanner.innerHTML = `🔍 Baris 1: Kode Python valid &rarr; <b>DIEKSEKUSI</b>.`;
 
@@ -1305,8 +1371,9 @@
             beam.style.opacity = '0';
             l3.style.background = 'transparent';
             sound.playSuccess();
-            consoleStream.innerHTML = `>>> Harga: 500000<br><b style="color:#f8fafc;">Cashback: 25000.0</b>`;
-            isExecuting = false;
+            consoleOut.innerHTML = `>>> Harga: 500000<br><b style="color:#f8fafc;">Cashback: 25000.0</b>`;
+            statusTag.textContent = 'Success';
+            statusTag.className = 'badge badge-emerald';
           }, 600);
 
         }, 750);
@@ -1314,13 +1381,9 @@
       }, 750);
     }
 
-    function resetCurrentTopic() {
-      loadTopicPreset(currentTopic);
-    }
-
-    // Inisialisasi awal saat halaman dimuat
+    // Inisialisasi awal saat dimuat
     window.addEventListener('DOMContentLoaded', () => {
-      loadTopicPreset('bagasi');
+      loadTemplateToEditor('bagasi');
     });
   </script>
 
