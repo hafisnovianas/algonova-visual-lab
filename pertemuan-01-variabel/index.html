@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pertemuan 1: Variabel & Assignment (Kotak Memori) - Algo Visual Lab</title>
+  
+  <!-- Integrasi Shared Design System Algo Visual Lab -->
+  <link rel="stylesheet" href="../shared/css/style.css">
+  <script type="module" src="../shared/components/index.js"></script>
+
+  <style>
+    /* ==========================================================================
+       FALLBACK & CUSTOM STYLING KHUSUS ANIMASI KOTAK VARIABEL
+       Memastikan tampilan tetap spektakuler baik via portal maupun double-click file://
+       ========================================================================== */
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --bg-input: #020617;
+      --border-color: #334155;
+      --border-focus: #f59e0b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-sky: #0ea5e9;
+      --accent-violet: #8b5cf6;
+      --accent-rose: #f43f5e;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 1.5rem;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .app-container {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Kartu & Container */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.85rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-sky { background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); }
+    .badge-violet { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.4); }
+    .badge-rose { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4); }
+
+    /* Tab Navigasi */
+    .tab-nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.5rem;
+      background: rgba(30, 41, 59, 0.6);
+      padding: 0.5rem;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+    .tab-btn.active {
+      background: var(--accent-amber);
+      color: #0f172a;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Area Panggung Animasi (Stage) */
+    .animation-stage {
+      position: relative;
+      background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0b1120 100%);
+      border: 2px solid #334155;
+      border-radius: 20px;
+      min-height: 420px;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Efek Grid Lantai Lab */
+    .stage-floor {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 120px;
+      background: 
+        linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent),
+        repeating-linear-gradient(90deg, rgba(51, 65, 85, 0.2) 0, rgba(51, 65, 85, 0.2) 1px, transparent 1px, transparent 40px),
+        repeating-linear-gradient(0deg, rgba(51, 65, 85, 0.2) 0, rgba(51, 65, 85, 0.2) 1px, transparent 1px, transparent 20px);
+      perspective: 400px;
+      transform: rotateX(45deg);
+      transform-origin: bottom center;
+      pointer-events: none;
+    }
+
+    /* Papan Kode Sintaks (Code-as-Widget) */
+    .code-display-bar {
+      z-index: 5;
+      background: rgba(2, 6, 23, 0.85);
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 800;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      transition: border-color 0.3s;
+    }
+    .code-display-bar.highlight {
+      border-color: var(--accent-amber);
+    }
+    .token-var-tag {
+      color: #38bdf8;
+      background: rgba(14, 165, 233, 0.15);
+      padding: 0.2rem 0.6rem;
+      border-radius: 8px;
+      border: 1px dashed rgba(14, 165, 233, 0.5);
+      transition: all 0.3s;
+    }
+    .token-var-tag.active {
+      background: #0284c7;
+      color: white;
+      transform: scale(1.08);
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.8);
+    }
+    .token-op-assign {
+      color: #f59e0b;
+      font-weight: 900;
+      font-size: 1.5rem;
+      transition: all 0.3s;
+    }
+    .token-op-assign.active {
+      transform: scale(1.4) rotate(90deg);
+      color: #fbbf24;
+      text-shadow: 0 0 15px #f59e0b;
+    }
+    .token-val-data {
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 0.2rem 0.6rem;
+      border-radius: 8px;
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      transition: all 0.3s;
+    }
+    .token-val-data.active {
+      background: #059669;
+      color: white;
+      transform: scale(1.08);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.8);
+    }
+
+    /* Penjelasan Langkah Inside-Out */
+    .step-narration {
+      z-index: 5;
+      margin-top: 0.65rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 40px;
+      max-width: 600px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .step-narration b {
+      color: var(--accent-amber);
+    }
+
+    /* KOTAK VARIABEL 3D (The 3D Variable Box) */
+    .boxes-container {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 3.5rem;
+      width: 100%;
+      margin: 1.5rem 0 1rem;
+      perspective: 900px;
+    }
+
+    .var-box-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Struktur Fisik Kotak */
+    .box-3d {
+      position: relative;
+      width: 190px;
+      height: 175px;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 3px solid #475569;
+      border-radius: 18px;
+      box-shadow: 
+        0 15px 30px rgba(0, 0, 0, 0.6),
+        inset 0 2px 10px rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 1rem;
+      transform-style: preserve-3d;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s;
+    }
+    .box-3d.highlight {
+      border-color: var(--accent-amber);
+      transform: scale(1.03) translateY(-4px);
+      box-shadow: 
+        0 20px 35px rgba(245, 158, 11, 0.25),
+        inset 0 0 15px rgba(245, 158, 11, 0.2);
+    }
+
+    /* Tutup Kotak Berengsel (Hinged Lid) */
+    .box-lid {
+      position: absolute;
+      top: -12px;
+      left: 6px;
+      right: 6px;
+      height: 24px;
+      background: linear-gradient(to bottom, #475569, #334155);
+      border: 2px solid #64748b;
+      border-radius: 8px 8px 4px 4px;
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 10;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .box-lid::after {
+      content: '';
+      width: 32px;
+      height: 4px;
+      background: #94a3b8;
+      border-radius: 2px;
+    }
+    .box-3d.open .box-lid {
+      transform: rotateX(-120deg) translateY(-8px);
+      background: linear-gradient(to bottom, #64748b, #475569);
+    }
+
+    /* Jendela Akrilik Transparan di Depan Kotak */
+    .box-window {
+      position: absolute;
+      top: 24px;
+      bottom: 50px;
+      left: 14px;
+      right: 14px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1.5px dashed #334155;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Papan Label Nama Variabel di Depan Kotak */
+    .box-label-plate {
+      position: relative;
+      z-index: 8;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border: 2px solid #38bdf8;
+      border-radius: 10px;
+      padding: 0.4rem 1.1rem;
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transform: translateY(8px);
+    }
+    .box-label-plate .icon-tag {
+      font-size: 0.9rem;
+    }
+
+    /* Wadah Nilai di Dalam Kotak (Payload) */
+    .payload-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Benda / Nilai Fisik (Value Gem) */
+    .value-gem {
+      position: relative;
+      padding: 0.55rem 0.95rem;
+      border-radius: 12px;
+      font-family: var(--font-mono);
+      font-size: 1.2rem;
+      font-weight: 900;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+    }
+    .value-gem .type-subtag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      opacity: 0.9;
+    }
+
+    /* Pewarnaan Tipe Data Gem */
+    .gem-int {
+      background: linear-gradient(135deg, #10b981, #047857);
+      border: 2px solid #34d399;
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.45);
+    }
+    .gem-str {
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      border: 2px solid #fbbf24;
+      color: #0f172a;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.45);
+    }
+    .gem-float {
+      background: linear-gradient(135deg, #0ea5e9, #0369a1);
+      border: 2px solid #38bdf8;
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(14, 165, 233, 0.45);
+    }
+    .gem-bool {
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      border: 2px solid #a78bfa;
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.45);
+    }
+
+    /* Animasi-Animasi Khusus */
+    /* 1. Nilai Baru Meluncur Masuk (Drop in) */
+    @keyframes dropInAnim {
+      0% {
+        transform: translateY(-220px) scale(0.6);
+        opacity: 0;
+      }
+      60% {
+        transform: translateY(12px) scale(1.15, 0.85);
+        opacity: 1;
+      }
+      80% {
+        transform: translateY(-6px) scale(0.95, 1.05);
+      }
+      100% {
+        transform: translateY(0) scale(1, 1);
+        opacity: 1;
+      }
+    }
+    .anim-drop-in {
+      animation: dropInAnim 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    /* 2. Nilai Lama Terlempar Keluar Saat Re-assignment */
+    @keyframes ejectAnim {
+      0% {
+        transform: translateY(0) scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-160px) translateX(80px) rotate(45deg) scale(0.4);
+        opacity: 0;
+      }
+    }
+    .anim-eject {
+      animation: ejectAnim 0.5s ease-in forwards;
+    }
+
+    /* 3. Getaran Guncang Kotak saat Nilai Masuk */
+    @keyframes boxBounceAnim {
+      0%, 100% { transform: scale(1); }
+      40% { transform: scale(1.08, 0.92); }
+      70% { transform: scale(0.96, 1.04); }
+    }
+    .anim-box-bounce {
+      animation: boxBounceAnim 0.45s ease-out;
+    }
+
+    /* 4. Duplikasi Nilai Saat print() (Hologram Kloning) */
+    @keyframes cloneFlyAnim {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(-100px) scale(1.1);
+        box-shadow: 0 0 25px rgba(56, 189, 248, 0.9);
+      }
+      100% {
+        transform: translateY(-60px) translateX(240px) scale(0.7);
+        opacity: 0;
+      }
+    }
+    .anim-clone-fly {
+      position: absolute;
+      animation: cloneFlyAnim 0.75s ease-out forwards;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    /* Layar Konsol Mini (Monitor Python) */
+    .mini-console {
+      width: 100%;
+      background: #020617;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 0.85rem 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: #38bdf8;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+    .console-header {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 0.35rem;
+    }
+    .console-output-text {
+      color: #f8fafc;
+      font-weight: 700;
+    }
+
+    /* Panel Kontrol Presets & Custom */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .preset-btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .btn-action {
+      background: #1e293b;
+      border: 1.5px solid #334155;
+      color: #f8fafc;
+      border-radius: 12px;
+      padding: 0.65rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+    .btn-action:hover {
+      background: #334155;
+      border-color: var(--accent-amber);
+      transform: translateY(-2px);
+    }
+    .btn-action:active {
+      transform: translateY(0);
+    }
+    .btn-action.btn-primary {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-color: #fbbf24;
+      color: #0f172a;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    .btn-action.btn-primary:hover {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.45);
+    }
+
+    /* Inline Input Form */
+    .inline-field-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .inline-input {
+      background: #020617;
+      border: 1.5px solid #334155;
+      color: #f8fafc;
+      padding: 0.65rem 0.85rem;
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .inline-input:focus {
+      border-color: var(--accent-amber);
+    }
+
+    /* Perbandingan Python Real: Pointer & ID */
+    .pointer-board {
+      background: rgba(2, 6, 23, 0.7);
+      border: 2px solid #334155;
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .memory-lane {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+      position: relative;
+      padding: 1.5rem 0;
+    }
+    .tag-item {
+      background: #0284c7;
+      color: white;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 2px solid #38bdf8;
+    }
+    .string-rope {
+      flex: 1;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, #38bdf8 0, #38bdf8 8px, transparent 8px, transparent 14px);
+      min-width: 80px;
+      position: relative;
+    }
+    .string-rope::after {
+      content: '►';
+      position: absolute;
+      right: -6px;
+      top: -8px;
+      color: #38bdf8;
+      font-size: 0.9rem;
+    }
+    .object-memory-box {
+      background: #1e293b;
+      border: 2px solid #10b981;
+      border-radius: 14px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+    }
+
+    /* Misi Cepat */
+    .mission-box {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1.5px solid #334155;
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Header Lab Interaktif -->
+    <header class="card" style="padding: 1.25rem 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <a href="../index.html" title="Kembali ke Dashboard Menu" style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          background: #334155;
+          color: #f8fafc;
+          border-radius: 12px;
+          text-decoration: none;
+          font-size: 1.35rem;
+          transition: background 0.2s;
+        " onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">🏠</a>
+        <div>
+          <h1 style="font-size: 1.4rem; font-weight: 900; color: #f59e0b; display: flex; align-items: center; gap: 0.5rem;">
+            <span class="badge badge-amber" style="font-size: 0.8rem;">P.1</span>
+            Kotak Variabel & Assignment
+          </h1>
+          <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 2px;">
+            Simulator Visual Python: Memahami Variabel sebagai Kotak Berlabel yang Menyimpan Nilai
+          </p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button id="btn-toggle-sound" class="btn-action" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+          🔊 Suara: ON
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigasi Tab Modul -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-box-single">
+        <span style="font-size: 1.25rem;">📦</span>
+        <span>1. Kotak Variabel Utama</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-box-compare">
+        <span style="font-size: 1.25rem;">👥</span>
+        <span>2. Dua Kotak (Kloning b = a)</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-python-pro">
+        <span style="font-size: 1.25rem;">🔬</span>
+        <span>3. Wawasan Pro: Label & Pointer</span>
+      </button>
+    </nav>
+
+    <!-- ===================================================================
+         TAB 1: KOTAK VARIABEL UTAMA (SIMULATOR UTAMA)
+         =================================================================== -->
+    <section id="tab-box-single" class="tab-content active">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-amber);">
+              <span>📦</span> Simulator Kotak Memori: Variabel Python
+            </h2>
+            <p class="card-subtitle">
+              Variabel adalah <b>kotak berlabel</b> di memori komputer. Tanda <code>=</code> adalah perintah untuk memasukkan nilai ke dalam kotak!
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <span class="badge badge-sky">🏷️ Label = Nama Variabel</span>
+            <span class="badge badge-emerald">💎 Benda = Nilai (Value)</span>
+          </div>
+        </div>
+
+        <!-- Misi Cepat Belajar -->
+        <div class="mission-box" id="mission-box-1">
+          <div style="display: flex; align-items: center; gap: 0.65rem;">
+            <span style="font-size: 1.5rem;">🎯</span>
+            <div>
+              <b style="color: #fde68a; font-size: 0.9rem;">Misi Tutor:</b>
+              <span id="mission-text" style="font-size: 0.85rem; color: #cbd5e1;">
+                Coba simpan angka <b>10</b> ke dalam kotak variabel <code>skor</code>!
+              </span>
+            </div>
+          </div>
+          <span class="badge badge-amber" id="badge-mission-status">⏳ Belum Selesai</span>
+        </div>
+
+        <!-- PANGGUNG ANIMASI 3D -->
+        <div class="animation-stage">
+          
+          <!-- Baris Kode Sintaks Live (Code-as-Widget) -->
+          <div class="code-display-bar" id="code-display">
+            <span class="token-var-tag" id="label-code-var">skor</span>
+            <span class="token-op-assign" id="label-code-op">=</span>
+            <span class="token-val-data" id="label-code-val">10</span>
+          </div>
+
+          <!-- Penjelasan Alur Eksekusi (Inside-Out Flow) -->
+          <div class="step-narration" id="step-narration-box">
+            <span>💡</span>
+            <span id="step-narration-text">
+              Pilih salah satu tombol perintah di bawah atau ketik nilai sendiri untuk melihat animasi kotak!
+            </span>
+          </div>
+
+          <!-- KOTAK 3D -->
+          <div class="boxes-container">
+            <div class="var-box-wrapper">
+              <div class="box-3d" id="main-box-3d">
+                <!-- Tutup Kotak Berengsel -->
+                <div class="box-lid" id="main-box-lid"></div>
+                
+                <!-- Jendela Transparan Penampil Nilai -->
+                <div class="box-window">
+                  <div class="payload-container" id="main-payload-container">
+                    <!-- Nilai Default Awal -->
+                    <div class="value-gem gem-int" id="active-gem">
+                      <span id="gem-text-val">10</span>
+                      <span class="type-subtag" id="gem-text-type">int</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Papan Label Nama Variabel -->
+                <div class="box-label-plate" id="main-label-plate">
+                  <span class="icon-tag">🏷️</span>
+                  <span id="box-plate-name">skor</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layar Terminal Konsol Python Mini -->
+          <div class="mini-console">
+            <div class="console-header">
+              <span>🖥️ Terminal Konsol Python (Output print)</span>
+              <span id="console-clock">Ready</span>
+            </div>
+            <div id="console-body">
+              <div style="color: #64748b;">>>> # Tekan tombol print() untuk melihat hasil cetak</div>
+            </div>
+          </div>
+
+          <!-- Efek Lantai Laboratorium -->
+          <div class="stage-floor"></div>
+        </div>
+
+        <!-- PANEL PERINTAH & PRESET DOPAMIN -->
+        <div class="controls-grid">
+          
+          <!-- Tombol Preset Cepat -->
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <h4 style="font-size: 0.9rem; font-weight: 800; color: #f8fafc; display: flex; align-items: center; gap: 0.4rem;">
+              <span>⚡</span> Tombol Aksi Cepat (Preset Materi):
+            </h4>
+            
+            <div class="preset-btn-group">
+              <button class="btn-action" id="btn-preset-init">
+                <span>📦</span> <code>skor = 10</code>
+              </button>
+              <button class="btn-action" id="btn-preset-replace">
+                <span>🔄</span> <code>skor = 25</code> (Ganti Nilai)
+              </button>
+              <button class="btn-action" id="btn-preset-accumulate">
+                <span>➕</span> <code>skor = skor + 5</code>
+              </button>
+              <button class="btn-action" id="btn-preset-string">
+                <span>🏷️</span> <code>skor = "Pikachu"</code>
+              </button>
+              <button class="btn-action" id="btn-preset-bool">
+                <span>⚡</span> <code>skor = True</code>
+              </button>
+              <button class="btn-action btn-primary" id="btn-preset-print">
+                <span>📺</span> <code>print(skor)</code> (Intip)
+              </button>
+              <button class="btn-action" id="btn-preset-empty" style="color: #f43f5e; border-color: rgba(244, 63, 94, 0.4);">
+                <span>🧹</span> Kosongkan Kotak
+              </button>
+            </div>
+          </div>
+
+          <!-- Form Kustom (Siswa & Tutor Bisa Ketik Bebas) -->
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; background: rgba(2, 6, 23, 0.4); padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color);">
+            <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--accent-amber); display: flex; align-items: center; gap: 0.4rem;">
+              <span>✍️</span> Coba Ketik Kode Sendiri:
+            </h4>
+            
+            <div class="inline-field-group">
+              <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <label style="font-size: 0.75rem; color: #94a3b8; font-weight: 700;">Nama Kotak (Variabel):</label>
+                <input type="text" id="custom-var-name" value="skor" class="inline-input" style="width: 110px;">
+              </div>
+              <span style="font-weight: 900; font-size: 1.2rem; color: #f59e0b; margin-top: 1.25rem;">=</span>
+              <div style="display: flex; flex-direction: column; gap: 0.25rem; flex: 1;">
+                <label style="font-size: 0.75rem; color: #94a3b8; font-weight: 700;">Nilai yang Dimasukkan:</label>
+                <input type="text" id="custom-var-val" value="100" class="inline-input" placeholder="contoh: 100 atau 'Budi'">
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.35rem;">
+              <button class="btn-action btn-primary" id="btn-run-custom" style="flex: 1;">
+                <span>🚀</span> Masukkan ke Kotak (=)
+              </button>
+              <button class="btn-action" id="btn-print-custom">
+                <span>📺</span> print()
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3 Aturan Emas Kotak Variabel (Golden Rules Card) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 0.5rem;">
+          <div style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 12px; border-left: 4px solid var(--accent-amber);">
+            <h5 style="color: #fde68a; font-weight: 800; margin-bottom: 0.35rem; font-size: 0.9rem;">
+              1. Satu Kotak, Satu Nilai!
+            </h5>
+            <p style="font-size: 0.8rem; color: #94a3b8; line-height: 1.5;">
+              Kotak variabel tidak bisa menyimpan dua benda sekaligus. Jika kamu memasukkan nilai baru (seperti <code>skor = 25</code>), nilai yang lama (10) akan terlempar keluar dan digantikan.
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 12px; border-left: 4px solid var(--accent-emerald);">
+            <h5 style="color: #6ee7b7; font-weight: 800; margin-bottom: 0.35rem; font-size: 0.9rem;">
+              2. print() HANYA Mengintip!
+            </h5>
+            <p style="font-size: 0.8rem; color: #94a3b8; line-height: 1.5;">
+              Ketika kamu memanggil <code>print(skor)</code>, komputer hanya "memfotokopi" isi kotak untuk ditampilkan ke layar monitor. Isi kotak asli <b>TETAP AMAN</b> di dalamnya!
+            </p>
+          </div>
+
+          <div style="background: rgba(15, 23, 42, 0.6); padding: 1rem; border-radius: 12px; border-left: 4px solid var(--accent-sky);">
+            <h5 style="color: #7dd3fc; font-weight: 800; margin-bottom: 0.35rem; font-size: 0.9rem;">
+              3. Kanan Selesai Dulu Baru Kiri!
+            </h5>
+            <p style="font-size: 0.8rem; color: #94a3b8; line-height: 1.5;">
+              Pada <code>skor = skor + 5</code>, komputer menghitung sisi kanan tanda <code>=</code> terlebih dahulu (10 + 5 = 15), lalu hasil akhirnya dimasukkan kembali ke kotak <code>skor</code>.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 2: DUA KOTAK (KLONING NILAI b = a)
+         =================================================================== -->
+    <section id="tab-box-compare" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-sky);">
+              <span>👥</span> Operasi Kloning: Menyalin Nilai Antar Kotak
+            </h2>
+            <p class="card-subtitle">
+              Apa yang terjadi jika kita menjalankan <code>b = a</code>? Apakah isi kotak <code>a</code> pindah dan kosong? Mari kita buktikan!
+            </p>
+          </div>
+          <span class="badge badge-sky">Sintaks: <code>b = a</code></span>
+        </div>
+
+        <div class="animation-stage" style="min-height: 380px;">
+          
+          <div class="code-display-bar">
+            <span class="token-var-tag" style="border-color: #a78bfa; color: #c4b5fd;">kotak_b</span>
+            <span class="token-op-assign">=</span>
+            <span class="token-var-tag" style="border-color: #38bdf8; color: #38bdf8;">kotak_a</span>
+          </div>
+
+          <div class="step-narration" id="narration-two-box">
+            <span>💡</span>
+            <span>Tekan tombol <b>"Salin (b = a)"</b> untuk melihat fotokopi nilai meluncur dari kotak A ke kotak B!</span>
+          </div>
+
+          <!-- Dua Kotak Berdampingan -->
+          <div class="boxes-container" style="gap: 4rem;">
+            
+            <!-- Kotak A -->
+            <div class="var-box-wrapper">
+              <div class="box-3d" id="box-a">
+                <div class="box-lid" id="lid-box-a"></div>
+                <div class="box-window">
+                  <div class="payload-container" id="payload-a">
+                    <div class="value-gem gem-int" id="gem-a">
+                      <span>99</span>
+                      <span class="type-subtag">int</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="box-label-plate" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-color: #38bdf8;">
+                  <span class="icon-tag">🏷️</span>
+                  <span>kotak_a</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tanda Panah Penyalur Salinan -->
+            <div style="font-size: 2.2rem; color: var(--accent-amber); font-weight: 900; align-self: center; margin-bottom: 2rem;">
+              &rarr;
+            </div>
+
+            <!-- Kotak B -->
+            <div class="var-box-wrapper">
+              <div class="box-3d" id="box-b">
+                <div class="box-lid" id="lid-box-b"></div>
+                <div class="box-window">
+                  <div class="payload-container" id="payload-b">
+                    <span style="font-size: 0.8rem; color: #64748b; font-style: italic;" id="empty-b-label">(Kotak Kosong)</span>
+                  </div>
+                </div>
+                <div class="box-label-plate" style="background: linear-gradient(135deg, #7c3aed, #6d28d9); border-color: #a78bfa;">
+                  <span class="icon-tag">🏷️</span>
+                  <span>kotak_b</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="stage-floor"></div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn-action btn-primary" id="btn-copy-a-to-b">
+            <span>✨</span> Jalankan Salin: <code>kotak_b = kotak_a</code>
+          </button>
+          <button class="btn-action" id="btn-change-a-after">
+            <span>🔄</span> Ubah <code>kotak_a = 500</code> (Apakah kotak B ikut berubah?)
+          </button>
+          <button class="btn-action" id="btn-reset-two-boxes">
+            <span>↺</span> Reset Ulang Dua Kotak
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 3: WAWASAN PRO: KOTAK VS LABEL TALI (PYTHON REALITY)
+         =================================================================== -->
+    <section id="tab-python-pro" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-violet);">
+              <span>🔬</span> Di Balik Layar Python: Analogi Kotak vs Label Tali (Pointer)
+            </h2>
+            <p class="card-subtitle">
+              Untuk pemula, analogi kotak sangat mudah dipahami. Tapi tahukah kamu bagaimana Python sebenarnya bekerja di memori komputer?
+            </p>
+          </div>
+          <span class="badge badge-violet">Senior Insight: Memory Reference</span>
+        </div>
+
+        <div class="pointer-board">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            
+            <div style="background: rgba(30, 41, 59, 0.7); padding: 1.25rem; border-radius: 12px; border: 1px solid #334155;">
+              <h4 style="color: #fbbf24; font-weight: 800; font-size: 1rem; margin-bottom: 0.5rem;">
+                📦 Bahasa C / Pascal (Model Kotak Memori Fisik)
+              </h4>
+              <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+                Variabel adalah <b>kotak alamat memori tetap</b>. Ketika nilainya diisi, biner angka 10 ditulis langsung ke dalam kotak tersebut. Jika nilainya diganti, isi kotak ditimpa secara fisik.
+              </p>
+            </div>
+
+            <div style="background: rgba(30, 41, 59, 0.7); padding: 1.25rem; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.5);">
+              <h4 style="color: #a78bfa; font-weight: 800; font-size: 1rem; margin-bottom: 0.5rem;">
+                🐍 Bahasa Python (Model Label Tali / Name Tag)
+              </h4>
+              <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;">
+                Di Python, semua data adalah <b>Objek yang berdiri sendiri di Memori Heap</b> (punya nomor <code>id()</code>). Variabel sebenarnya adalah <b>Label Tali (Name Tag)</b> yang diikatkan ke objek tersebut!
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Diagram Tali Tautan Python -->
+          <div style="margin-top: 1rem;">
+            <h5 style="font-size: 0.85rem; color: #94a3b8; font-weight: 800; margin-bottom: 0.75rem;">
+              SIMULASI TALI PENUNJUK MEMORI PYTHON:
+            </h5>
+            
+            <div class="memory-lane">
+              <div class="tag-item">
+                <span>🏷️</span>
+                <span id="pro-tag-name">skor</span>
+              </div>
+
+              <div class="string-rope"></div>
+
+              <div class="object-memory-box">
+                <span style="font-size: 0.7rem; color: #34d399; font-family: var(--font-mono); font-weight: 700;">
+                  Objek Integer di Memori
+                </span>
+                <span style="font-size: 1.6rem; font-weight: 900; color: #f8fafc;" id="pro-obj-val">10</span>
+                <span style="font-size: 0.7rem; color: #64748b; font-family: var(--font-mono);" id="pro-obj-id">
+                  id(skor) = 0x7ffd9821
+                </span>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem;">
+              <button class="btn-action" id="btn-pro-retie">
+                <span>🪢</span> Ikat Tali ke Objek Baru (skor = 200)
+              </button>
+              <button class="btn-action" id="btn-pro-reset">
+                <span>↺</span> Kembalikan ke 10
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Teacher Notes (Drawer Panduan Tutor) -->
+    <teacher-notes>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <h4 style="font-weight: 800; color: var(--accent-amber); margin-bottom: 0.35rem;">
+            Tips Mengajar Konsep Variabel ke Siswa ADHD & Pemula:
+          </h4>
+          <ul style="padding-left: 1.25rem; font-size: 0.82rem; display: flex; flex-direction: column; gap: 0.45rem; line-height: 1.5;">
+            <li>
+              <b>Gunakan Analogi Fisik:</b> "Bayangkan kamu punya kotak bekal atau kardus sepatu. Di depannya kamu tempel selotip bertuliskan 'skor'. Benda apa pun yang kamu masukkan ke dalamnya disebut nilai!"
+            </li>
+            <li>
+              <b>Tekankan Bahwa = Adalah Perintah Simpan:</b> Ingatkan siswa bahwa di matematika, <code>=</code> artinya 'sama dengan'. Tapi di Python, <code>=</code> adalah <i>tangan robot yang membuka kotak lalu memasukkan barang ke dalamnya</i>.
+            </li>
+            <li>
+              <b>Jelaskan Kenapa Nilai Lama Hilang:</b> "Kotak ini ukurannya pas cuma untuk satu bola! Kalau kamu masukkan bola baru nomor 25, bola nomor 10 terpaksa mental keluar!"
+            </li>
+            <li>
+              <b>Demonstrasikan print():</b> Tunjukkan tombol <code>print(skor)</code>. Tegaskan bahwa kotak tidak kosong saat di-print, komputer hanya memotret/mengintip isinya.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </teacher-notes>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 1.5rem 0; font-size: 0.8rem; color: #64748b;">
+      Algo Visual Lab &bull; Media Peraga Visual Python Pertemuan 1 &bull; Algonova
+    </footer>
+
+  </div>
+
+  <!-- SCRIPT LOGIKA ANIMASI & WEB AUDIO -->
+  <script>
+    /* ==========================================================================
+       WEB AUDIO SYNTHESIZER MANDIRI (ZERO DEPENDENCY)
+       ========================================================================== */
+    class VisualLabAudio {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      toggle() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+      }
+      playTone(freq, type = 'sine', duration = 0.08, volume = 0.12) {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+      playOpenLid() {
+        if (!this.enabled) return;
+        this.playTone(320, 'sine', 0.08, 0.1);
+        setTimeout(() => this.playTone(480, 'sine', 0.06, 0.12), 40);
+      }
+      playDropIn() {
+        if (!this.enabled) return;
+        this.playTone(523.25, 'triangle', 0.06, 0.15); // C5
+        setTimeout(() => this.playTone(659.25, 'triangle', 0.1, 0.18), 60); // E5
+        setTimeout(() => this.playTone(783.99, 'triangle', 0.14, 0.16), 120); // G5
+      }
+      playEject() {
+        if (!this.enabled) return;
+        this.playTone(280, 'sawtooth', 0.12, 0.14);
+        setTimeout(() => this.playTone(180, 'sawtooth', 0.16, 0.12), 60);
+      }
+      playPrint() {
+        if (!this.enabled) return;
+        this.playTone(600, 'sine', 0.05, 0.1);
+        setTimeout(() => this.playTone(900, 'sine', 0.08, 0.12), 50);
+      }
+      playSuccess() {
+        if (!this.enabled) return;
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+          setTimeout(() => this.playTone(f, 'triangle', 0.12, 0.15), i * 70);
+        });
+      }
+    }
+
+    const sound = new VisualLabAudio();
+
+    // Setup tombol toggle suara
+    const btnToggleSound = document.getElementById('btn-toggle-sound');
+    if (btnToggleSound) {
+      btnToggleSound.addEventListener('click', () => {
+        const state = sound.toggle();
+        btnToggleSound.textContent = state ? '🔊 Suara: ON' : '🔇 Suara: OFF';
+      });
+    }
+
+    /* ==========================================================================
+       TAB SWITCHING SYSTEM
+       ========================================================================== */
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-tab');
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const targetContent = document.getElementById(targetId);
+        if (targetContent) targetContent.classList.add('active');
+        sound.playTone(450, 'sine', 0.04, 0.08);
+      });
+    });
+
+    /* ==========================================================================
+       LOGIKA ANIMASI KOTAK UTAMA (TAB 1)
+       ========================================================================== */
+    const mainBox = document.getElementById('main-box-3d');
+    const mainPayload = document.getElementById('main-payload-container');
+    const boxPlateName = document.getElementById('box-plate-name');
+    const labelCodeVar = document.getElementById('label-code-var');
+    const labelCodeOp = document.getElementById('label-code-op');
+    const labelCodeVal = document.getElementById('label-code-val');
+    const stepNarrationText = document.getElementById('step-narration-text');
+    const consoleBody = document.getElementById('console-body');
+    const missionStatus = document.getElementById('badge-mission-status');
+
+    let currentVariable = {
+      name: 'skor',
+      value: '10',
+      type: 'int'
+    };
+
+    // Deteksi Tipe Data Otomatis
+    function detectType(valStr) {
+      const trimmed = String(valStr).trim();
+      if (/^-?\d+$/.test(trimmed)) return 'int';
+      if (/^-?\d+\.\d+$/.test(trimmed)) return 'float';
+      if (trimmed === 'True' || trimmed === 'False') return 'bool';
+      if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+        return 'str';
+      }
+      return 'str';
+    }
+
+    function formatValForDisplay(valStr, type) {
+      if (type === 'str' && !valStr.startsWith('"') && !valStr.startsWith("'")) {
+        return `"${valStr}"`;
+      }
+      return valStr;
+    }
+
+    function getGemClass(type) {
+      switch (type) {
+        case 'int': return 'gem-int';
+        case 'str': return 'gem-str';
+        case 'float': return 'gem-float';
+        case 'bool': return 'gem-bool';
+        default: return 'gem-int';
+      }
+    }
+
+    // Eksekusi Animasi Assignment Kotak
+    let isAnimating = false;
+
+    function executeAssignment(varName, rawValue, options = {}) {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      const detectedType = detectType(rawValue);
+      const displayVal = formatValForDisplay(rawValue, detectedType);
+
+      // Perbarui Tampilan Kode Sintaks
+      labelCodeVar.textContent = varName;
+      labelCodeVal.textContent = displayVal;
+      boxPlateName.textContent = varName;
+
+      // Reset Active Highlights
+      labelCodeVar.classList.remove('active');
+      labelCodeOp.classList.remove('active');
+      labelCodeVal.classList.remove('active');
+
+      // Langkah 1: Kanan dieksekusi dulu (Sisi Nilai)
+      stepNarrationText.innerHTML = `<b>Langkah 1:</b> Komputer menyiapkan nilai <code style="color:#34d399">${displayVal}</code> (Tipe: ${detectedType.toUpperCase()}) di sebelah kanan.`;
+      labelCodeVal.classList.add('active');
+      sound.playTone(520, 'sine', 0.08, 0.1);
+
+      setTimeout(() => {
+        // Langkah 2: Operator = bertugas membuka kotak
+        labelCodeVal.classList.remove('active');
+        labelCodeOp.classList.add('active');
+        stepNarrationText.innerHTML = `<b>Langkah 2:</b> Simbol <code style="color:#f59e0b">=</code> membuka tutup kotak <b>${varName}</b>!`;
+        mainBox.classList.add('open');
+        mainBox.classList.add('highlight');
+        sound.playOpenLid();
+
+        setTimeout(() => {
+          // Jika sudah ada nilai lama di dalam kotak, lempar keluar dulu!
+          const oldGem = mainPayload.querySelector('.value-gem');
+          if (oldGem) {
+            oldGem.classList.add('anim-eject');
+            sound.playEject();
+          }
+
+          setTimeout(() => {
+            // Hapus nilai lama dari DOM
+            mainPayload.innerHTML = '';
+
+            // Langkah 3: Nilai baru meluncur masuk ke dalam kotak!
+            labelCodeOp.classList.remove('active');
+            labelCodeVar.classList.add('active');
+            stepNarrationText.innerHTML = `<b>Langkah 3:</b> Nilai <code style="color:#34d399">${displayVal}</code> masuk ke dalam kotak <b>${varName}</b>! Tutup kotak kembali rapat.`;
+
+            const newGem = document.createElement('div');
+            newGem.className = `value-gem ${getGemClass(detectedType)} anim-drop-in`;
+            newGem.innerHTML = `
+              <span>${displayVal}</span>
+              <span class="type-subtag">${detectedType}</span>
+            `;
+            mainPayload.appendChild(newGem);
+
+            sound.playDropIn();
+            mainBox.classList.add('anim-box-bounce');
+
+            // Perbarui State
+            currentVariable = {
+              name: varName,
+              value: displayVal,
+              type: detectedType
+            };
+
+            // Cek Misi Tutor
+            if (varName === 'skor' && (displayVal === '10' || displayVal === 10)) {
+              if (missionStatus) {
+                missionStatus.className = 'badge badge-emerald';
+                missionStatus.textContent = '🎉 Misi Berhasil!';
+                sound.playSuccess();
+              }
+            }
+
+            setTimeout(() => {
+              mainBox.classList.remove('open');
+              mainBox.classList.remove('highlight');
+              mainBox.classList.remove('anim-box-bounce');
+              labelCodeVar.classList.remove('active');
+              isAnimating = false;
+            }, 500);
+
+          }, 350);
+
+        }, 550);
+
+      }, 650);
+    }
+
+    // Eksekusi Animasi print() (Mengintip Isi Kotak)
+    function executePrint() {
+      if (isAnimating) return;
+      isAnimating = true;
+
+      const varName = currentVariable.name;
+      const currentVal = currentVariable.value;
+      const gem = mainPayload.querySelector('.value-gem');
+
+      if (!gem) {
+        stepNarrationText.innerHTML = `⚠️ Kotak <b>${varName}</b> sedang kosong! Tidak ada yang bisa dicetak.`;
+        isAnimating = false;
+        return;
+      }
+
+      stepNarrationText.innerHTML = `<b>print(${varName}):</b> Tutup kotak terbuka sedikit, komputer <b>mengintip & memfotokopi</b> nilai tanpa mengosongkan kotak!`;
+      mainBox.classList.add('open');
+      sound.playOpenLid();
+
+      setTimeout(() => {
+        // Hologram clone meluncur keluar menuju konsol
+        const clone = gem.cloneNode(true);
+        clone.classList.remove('anim-drop-in');
+        clone.classList.add('anim-clone-fly');
+        mainPayload.appendChild(clone);
+        sound.playPrint();
+
+        setTimeout(() => {
+          clone.remove();
+          mainBox.classList.remove('open');
+
+          // Tampilkan output di konsol terminal
+          const outLine = document.createElement('div');
+          outLine.innerHTML = `<span style="color:#94a3b8;">>>> print(${varName})</span><br><b class="console-output-text">${currentVal}</b>`;
+          consoleBody.appendChild(outLine);
+          consoleBody.scrollTop = consoleBody.scrollHeight;
+
+          stepNarrationText.innerHTML = `✨ Nilai <b style="color:#38bdf8">${currentVal}</b> berhasil tampil di monitor! Kotak asli <b>tetap utuh menyimpan nilainya</b>.`;
+          isAnimating = false;
+        }, 700);
+
+      }, 450);
+    }
+
+    // Kosongkan Kotak
+    function emptyBox() {
+      if (isAnimating) return;
+      const gem = mainPayload.querySelector('.value-gem');
+      if (!gem) return;
+      isAnimating = true;
+      mainBox.classList.add('open');
+      sound.playOpenLid();
+      setTimeout(() => {
+        gem.classList.add('anim-eject');
+        sound.playEject();
+        setTimeout(() => {
+          mainPayload.innerHTML = '<span style="font-size:0.8rem;color:#64748b;font-style:italic;">(Kotak Kosong)</span>';
+          mainBox.classList.remove('open');
+          stepNarrationText.innerHTML = `🧹 Kotak <b>${currentVariable.name}</b> sekarang kosong!`;
+          isAnimating = false;
+        }, 400);
+      }, 350);
+    }
+
+    // Tombol-Tombol Preset Tab 1
+    document.getElementById('btn-preset-init')?.addEventListener('click', () => {
+      executeAssignment('skor', '10');
+    });
+
+    document.getElementById('btn-preset-replace')?.addEventListener('click', () => {
+      executeAssignment('skor', '25');
+    });
+
+    document.getElementById('btn-preset-accumulate')?.addEventListener('click', () => {
+      const curNum = parseInt(currentVariable.value, 10);
+      const nextNum = isNaN(curNum) ? 15 : curNum + 5;
+      stepNarrationText.innerHTML = `<b>skor = skor + 5:</b> Komputer ambil isi kotak lama (${curNum}), tambah 5 = <b>${nextNum}</b>, lalu masukkan kembali!`;
+      setTimeout(() => {
+        executeAssignment('skor', String(nextNum));
+      }, 400);
+    });
+
+    document.getElementById('btn-preset-string')?.addEventListener('click', () => {
+      executeAssignment('skor', '"Pikachu"');
+    });
+
+    document.getElementById('btn-preset-bool')?.addEventListener('click', () => {
+      executeAssignment('skor', 'True');
+    });
+
+    document.getElementById('btn-preset-print')?.addEventListener('click', () => {
+      executePrint();
+    });
+
+    document.getElementById('btn-preset-empty')?.addEventListener('click', () => {
+      emptyBox();
+    });
+
+    // Form Kustom Siswa
+    document.getElementById('btn-run-custom')?.addEventListener('click', () => {
+      const vName = document.getElementById('custom-var-name').value.trim() || 'data';
+      const vVal = document.getElementById('custom-var-val').value.trim() || '0';
+      executeAssignment(vName, vVal);
+    });
+
+    document.getElementById('btn-print-custom')?.addEventListener('click', () => {
+      executePrint();
+    });
+
+    /* ==========================================================================
+       TAB 2: LOGIKA DUA KOTAK (KLONING b = a)
+       ========================================================================== */
+    const boxA = document.getElementById('box-a');
+    const boxB = document.getElementById('box-b');
+    const payloadA = document.getElementById('payload-a');
+    const payloadB = document.getElementById('payload-b');
+    const narrationTwoBox = document.getElementById('narration-two-box');
+
+    document.getElementById('btn-copy-a-to-b')?.addEventListener('click', () => {
+      narrationTwoBox.innerHTML = `<span>✨</span> <b>b = a:</b> Komputer memfotokopi nilai <b>99</b> dari kotak A, lalu menyimpannya ke kotak B. Kotak A <b>TIDAK</b> menjadi kosong!`;
+      boxA.classList.add('open');
+      sound.playOpenLid();
+
+      setTimeout(() => {
+        const gemA = payloadA.querySelector('.value-gem');
+        if (!gemA) return;
+
+        const cloneFly = gemA.cloneNode(true);
+        cloneFly.classList.add('anim-clone-fly');
+        payloadA.appendChild(cloneFly);
+        sound.playPrint();
+
+        setTimeout(() => {
+          cloneFly.remove();
+          boxB.classList.add('open');
+          sound.playOpenLid();
+
+          setTimeout(() => {
+            payloadB.innerHTML = `
+              <div class="value-gem gem-int anim-drop-in">
+                <span>99</span>
+                <span class="type-subtag">int</span>
+              </div>
+            `;
+            sound.playDropIn();
+            boxB.classList.add('anim-box-bounce');
+
+            setTimeout(() => {
+              boxA.classList.remove('open');
+              boxB.classList.remove('open');
+              boxB.classList.remove('anim-box-bounce');
+              sound.playSuccess();
+            }, 400);
+          }, 300);
+        }, 500);
+      }, 400);
+    });
+
+    document.getElementById('btn-change-a-after')?.addEventListener('click', () => {
+      narrationTwoBox.innerHTML = `<span>🔄</span> <b>kotak_a = 500:</b> Nilai kotak A diganti jadi 500. Perhatikan bahwa kotak B <b>TETAP 99</b> karena mereka adalah dua kotak yang berbeda!`;
+      boxA.classList.add('open');
+      sound.playOpenLid();
+
+      setTimeout(() => {
+        payloadA.innerHTML = `
+          <div class="value-gem gem-int anim-drop-in">
+            <span>500</span>
+            <span class="type-subtag">int</span>
+          </div>
+        `;
+        sound.playDropIn();
+        boxA.classList.add('anim-box-bounce');
+
+        setTimeout(() => {
+          boxA.classList.remove('open');
+          boxA.classList.remove('anim-box-bounce');
+        }, 400);
+      }, 350);
+    });
+
+    document.getElementById('btn-reset-two-boxes')?.addEventListener('click', () => {
+      payloadA.innerHTML = `
+        <div class="value-gem gem-int">
+          <span>99</span>
+          <span class="type-subtag">int</span>
+        </div>
+      `;
+      payloadB.innerHTML = `<span style="font-size: 0.8rem; color: #64748b; font-style: italic;">(Kotak Kosong)</span>`;
+      narrationTwoBox.innerHTML = `<span>💡</span> Dua kotak telah direset ke posisi awal!`;
+      sound.playTone(400, 'sine', 0.05, 0.08);
+    });
+
+    /* ==========================================================================
+       TAB 3: LOGIKA PYTHON REALITY (POINTER & ID)
+       ========================================================================== */
+    const proObjVal = document.getElementById('pro-obj-val');
+    const proObjId = document.getElementById('pro-obj-id');
+
+    document.getElementById('btn-pro-retie')?.addEventListener('click', () => {
+      proObjVal.textContent = '200';
+      proObjId.textContent = 'id(skor) = 0x7ffd98F4 (Alamat Memori Baru!)';
+      proObjVal.style.color = '#38bdf8';
+      sound.playTone(680, 'triangle', 0.1, 0.14);
+    });
+
+    document.getElementById('btn-pro-reset')?.addEventListener('click', () => {
+      proObjVal.textContent = '10';
+      proObjId.textContent = 'id(skor) = 0x7ffd9821';
+      proObjVal.style.color = '#f8fafc';
+      sound.playTone(480, 'sine', 0.08, 0.1);
+    });
+  </script>
+
+</body>
+</html>

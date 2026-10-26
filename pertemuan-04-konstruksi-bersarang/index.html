@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pertemuan 4: Konstruksi Bersarang (Nested Constructs & Clean Code) - Algo Visual Lab</title>
+
+  <!-- Integrasi Shared Design System Algo Visual Lab -->
+  <link rel="stylesheet" href="../shared/css/style.css">
+  <script type="module" src="../shared/components/index.js"></script>
+
+  <style>
+    /* ==========================================================================
+       FALLBACK & CUSTOM STYLING KHUSUS KONSTRUKSI BERSARANG (PERTEMUAN 4)
+       ========================================================================== */
+    :root {
+      --bg-main: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --bg-input: #020617;
+      --border-color: #334155;
+      --border-focus: #f59e0b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-sky: #0ea5e9;
+      --accent-violet: #8b5cf6;
+      --accent-rose: #f43f5e;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      margin: 0;
+      padding: 1.5rem;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .app-container {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.85rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-sky { background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); }
+    .badge-violet { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.4); }
+    .badge-rose { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4); }
+
+    /* Tab Navigasi */
+    .tab-nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 0.5rem;
+      background: rgba(30, 41, 59, 0.6);
+      padding: 0.5rem;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.85rem 0.65rem;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    .tab-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-primary);
+    }
+    .tab-btn.active {
+      background: var(--accent-amber);
+      color: #0f172a;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Area Panggung Visual */
+    .stage-container {
+      background: radial-gradient(circle at 50% 30%, #1e293b 0%, #0b1120 100%);
+      border: 2px solid #334155;
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Code-as-Widget Display Bar */
+    .code-widget-bar {
+      z-index: 5;
+      background: rgba(2, 6, 23, 0.9);
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 800;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      flex-wrap: wrap;
+    }
+
+    /* Highlight Token */
+    .token-var { color: #38bdf8; }
+    .token-op { color: #f59e0b; font-weight: 900; }
+    .token-func-outer {
+      color: #a78bfa;
+      background: rgba(139, 92, 246, 0.15);
+      padding: 0.15rem 0.5rem;
+      border-radius: 8px;
+      border: 1px dashed rgba(139, 92, 246, 0.5);
+      transition: all 0.3s;
+    }
+    .token-func-inner {
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 0.15rem 0.5rem;
+      border-radius: 8px;
+      border: 1px dashed rgba(16, 185, 129, 0.5);
+      transition: all 0.3s;
+    }
+    .token-active-pulse {
+      transform: scale(1.1);
+      box-shadow: 0 0 18px currentColor;
+    }
+
+    /* Penjelasan Langkah Inside-Out */
+    .step-banner {
+      z-index: 5;
+      margin-top: 0.65rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      text-align: center;
+      max-width: 650px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    .step-banner b { color: var(--accent-amber); }
+
+    /* VISUAL MATRYOSHKA / BONEKA RUSIA BERSARANG */
+    .nesting-factory {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      width: 100%;
+      margin: 1.5rem 0;
+      z-index: 4;
+      flex-wrap: wrap;
+    }
+
+    /* Lapisan Luar: Mesin int() */
+    .machine-outer {
+      position: relative;
+      background: linear-gradient(135deg, rgba(88, 28, 135, 0.7), rgba(49, 14, 84, 0.85));
+      border: 3px solid #a78bfa;
+      border-radius: 24px;
+      padding: 1.5rem 1.75rem 1.25rem;
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.35);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      min-width: 320px;
+      transition: all 0.3s;
+    }
+    .machine-outer.processing {
+      border-color: #f59e0b;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
+    }
+    .machine-tag-outer {
+      position: absolute;
+      top: -14px;
+      background: #7c3aed;
+      color: white;
+      font-family: var(--font-mono);
+      font-weight: 900;
+      padding: 0.25rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      border: 1.5px solid #c4b5fd;
+    }
+
+    /* Lapisan Dalam: Mesin input() */
+    .machine-inner {
+      background: linear-gradient(135deg, rgba(6, 78, 59, 0.8), rgba(4, 47, 46, 0.9));
+      border: 2px dashed #34d399;
+      border-radius: 16px;
+      padding: 1.15rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .machine-tag-inner {
+      position: absolute;
+      top: -12px;
+      background: #059669;
+      color: white;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      padding: 0.15rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      border: 1px solid #6ee7b7;
+    }
+
+    /* Paket Data yang Bergerak */
+    .data-parcel {
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 1.15rem;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .parcel-str {
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      border: 2px solid #fde68a;
+      color: #0f172a;
+    }
+    .parcel-int {
+      background: linear-gradient(135deg, #10b981, #047857);
+      border: 2px solid #6ee7b7;
+      color: white;
+    }
+
+    /* Kotak Variabel Target */
+    .target-box {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 2.5px solid #38bdf8;
+      border-radius: 16px;
+      padding: 1.25rem;
+      min-width: 140px;
+      height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Buttons & Controls */
+    .btn-action {
+      background: #1e293b;
+      border: 1.5px solid #334155;
+      color: #f8fafc;
+      border-radius: 12px;
+      padding: 0.65rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+    .btn-action:hover {
+      background: #334155;
+      border-color: var(--accent-amber);
+      transform: translateY(-2px);
+    }
+    .btn-action:active { transform: translateY(0); }
+    .btn-action.btn-primary {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-color: #fbbf24;
+      color: #0f172a;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    .btn-action.btn-primary:hover {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+
+    /* Barometer Keterbacaan (Clean Code Meter) */
+    .meter-container {
+      background: rgba(2, 6, 23, 0.6);
+      border: 1.5px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .meter-bar-track {
+      height: 14px;
+      background: #1e293b;
+      border-radius: 9999px;
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+    .meter-bar-fill {
+      height: 100%;
+      width: 85%;
+      background: linear-gradient(90deg, #f43f5e, #f59e0b, #10b981);
+      border-radius: 9999px;
+      transition: width 0.4s ease;
+    }
+
+    /* Card Perbandingan Kode */
+    .code-comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .code-snippet-box {
+      background: #020617;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .code-snippet-box:hover {
+      border-color: var(--accent-amber);
+      transform: translateY(-2px);
+    }
+    .code-snippet-box.selected {
+      border-color: #10b981;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Header Lab Interaktif -->
+    <header class="card" style="padding: 1.25rem 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.85rem;">
+        <a href="../index.html" title="Kembali ke Dashboard Menu" style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          background: #334155;
+          color: #f8fafc;
+          border-radius: 12px;
+          text-decoration: none;
+          font-size: 1.35rem;
+          transition: background 0.2s;
+        " onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">🏠</a>
+        <div>
+          <h1 style="font-size: 1.4rem; font-weight: 900; color: #f59e0b; display: flex; align-items: center; gap: 0.5rem;">
+            <span class="badge badge-amber" style="font-size: 0.8rem;">P.4</span>
+            Konstruksi Bersarang & Kode Ringkas
+          </h1>
+          <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 2px;">
+            Kurikulum Algonova Modul 1: Memahami Fungsi Bersarang <code>int(input())</code>, Eksekusi Inside-Out, dan Keterbacaan Kode
+          </p>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <button id="btn-toggle-sound" class="btn-action" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+          🔊 Suara: ON
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigasi 5 Tab Operasi -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-nesting-int">
+        <span style="font-size: 1.25rem;">📦</span>
+        <span>1. int(input()) Inside-Out</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-nesting-len">
+        <span style="font-size: 1.25rem;">📏</span>
+        <span>2. len(input()) Panjang Teks</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-return-rule">
+        <span style="font-size: 1.25rem;">⚖️</span>
+        <span>3. Aturan Bersarang (Return Value)</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-clean-code">
+        <span style="font-size: 1.25rem;">🧼</span>
+        <span>4. Keringkasan vs Keterbacaan</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-comments">
+        <span style="font-size: 1.25rem;">💬</span>
+        <span>5. Sinar Radar Komentar (#)</span>
+      </button>
+    </nav>
+
+    <!-- ===================================================================
+         TAB 1: INT(INPUT()) - SIMULATOR PABRIK MATRYOSHKA
+         =================================================================== -->
+    <section id="tab-nesting-int" class="tab-content active">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-amber);">
+              <span>📦</span> Simulator Mesin Bersarang: <code>massa = int(input())</code>
+            </h2>
+            <p class="card-subtitle">
+              Kasus ProTeam John: Mengapa dua baris kode bisa disederhanakan menjadi satu baris bersarang?
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <span class="badge badge-sky">Prinsip: Inside-Out (Dalam ke Luar)</span>
+            <span class="badge badge-emerald">Tugas: Berat Bagasi</span>
+          </div>
+        </div>
+
+        <!-- Panggung Visual -->
+        <div class="stage-container">
+          
+          <!-- Baris Kode Interaktif -->
+          <div class="code-widget-bar">
+            <span class="token-var">massa</span>
+            <span class="token-op">=</span>
+            <span class="token-func-outer" id="token-outer">int<span style="color:#f8fafc;">(</span></span>
+            <span class="token-func-inner" id="token-inner">input<span style="color:#f8fafc;">('Berat dari tas:')</span></span>
+            <span class="token-func-outer" style="border:none; padding:0; color:#f8fafc;">)</span>
+          </div>
+
+          <!-- Narasi Langkah Berjalan -->
+          <div class="step-banner" id="step-banner-int">
+            <span>💡</span>
+            <span id="step-banner-int-text">
+              Ketik angka berat bagasi di bawah lalu klik <b>"Jalankan Mesin Bersarang"</b> untuk melihat eksekusi dari dalam ke luar!
+            </span>
+          </div>
+
+          <!-- PABRIK MESIN BERSARANG (NESTING FACTORY) -->
+          <div class="nesting-factory">
+            
+            <!-- Mesin Luar int() membungkus Mesin Dalam input() -->
+            <div class="machine-outer" id="machine-outer-box">
+              <span class="machine-tag-outer">MESIN LUAR: int( ... )</span>
+              
+              <!-- Mesin Dalam input() -->
+              <div class="machine-inner" id="machine-inner-box">
+                <span class="machine-tag-inner">MESIN DALAM: input()</span>
+                <span style="font-size:0.75rem; color:#a7f3d0; font-weight:700;">1. Minta Masukan Keyboard:</span>
+                <div style="display:flex; align-items:center; gap:0.4rem;">
+                  <span style="font-family:var(--font-mono); font-size:0.85rem; color:#cbd5e1;">Ketik:</span>
+                  <input type="text" id="input-bagasi-val" value="23" style="width:70px; background:#020617; border:1.5px solid #34d399; color:#f8fafc; font-family:var(--font-mono); font-weight:800; padding:0.35rem 0.6rem; border-radius:8px; text-align:center;">
+                  <span style="font-size:0.8rem; color:#94a3b8;">kg</span>
+                </div>
+                <div id="output-inner-area" style="min-height:42px; display:flex; align-items:center;">
+                  <div class="data-parcel parcel-str" id="parcel-inner-result">
+                    <span>"23"</span> <span style="font-size:0.65rem; opacity:0.8;">[str]</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Output Mesin Luar int() -->
+              <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
+                <span style="font-size:0.75rem; color:#ddd6fe; font-weight:700;">2. Konversi Kutip Jadi Angka Bulat murni:</span>
+                <div id="output-outer-area" style="min-height:42px; display:flex; align-items:center;">
+                  <div class="data-parcel parcel-int" id="parcel-outer-result" style="display:none;">
+                    <span>23</span> <span style="font-size:0.65rem; opacity:0.8;">[int]</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Tanda Panah Penyalur Nilai -->
+            <div style="font-size:2rem; color:var(--accent-amber); font-weight:900;">
+              &rarr;
+            </div>
+
+            <!-- Kotak Variabel Target -->
+            <div class="target-box" id="var-target-box">
+              <span class="badge badge-sky" style="font-size:0.75rem;">Kotak Variabel</span>
+              <div id="box-slot-val" style="font-family:var(--font-mono); font-size:1.6rem; font-weight:900; color:#34d399;">
+                23
+              </div>
+              <span style="font-family:var(--font-mono); font-weight:800; color:#f8fafc; font-size:0.95rem;">massa</span>
+            </div>
+
+          </div>
+
+          <!-- Tombol Pemicu -->
+          <div style="display:flex; gap:0.75rem; z-index:5; flex-wrap:wrap; justify-content:center;">
+            <button class="btn-action btn-primary" id="btn-run-nesting-int">
+              <span>⚡</span> Jalankan Mesin Bersarang (Inside-Out)
+            </button>
+            <button class="btn-action" id="btn-compare-two-lines">
+              <span>📋</span> Bandingkan: Versi 2 Baris vs Versi Bersarang
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Penjelasan Komparasi 2 Baris vs 1 Baris -->
+        <div id="compare-modal-box" style="display:none; background:rgba(2, 6, 23, 0.7); border:1.5px solid #334155; border-radius:14px; padding:1.25rem;">
+          <h4 style="color:#fde68a; font-weight:800; font-size:0.95rem; margin-bottom:0.75rem;">
+            🔍 Perbandingan Langsung: Versi Biasa vs Versi Bersarang John
+          </h4>
+          <div class="code-comparison-grid">
+            <div style="background:#0f172a; padding:1rem; border-radius:10px; border-left:3px solid #64748b;">
+              <b style="color:#94a3b8; font-size:0.8rem;">CARA LAMA (2 BARIS):</b>
+              <pre style="margin-top:0.5rem; color:#f8fafc; font-size:0.85rem;">massa = input('Berat tas:')
+massa = int(massa)</pre>
+              <p style="font-size:0.78rem; color:#94a3b8; margin-top:0.4rem;">
+                Komputer harus menyimpan string ke kotak <code>massa</code> dulu, lalu mengambilnya lagi untuk di-int(). Lebih lambat & boros baris.
+              </p>
+            </div>
+            <div style="background:#0f172a; padding:1rem; border-radius:10px; border-left:3px solid #10b981;">
+              <b style="color:#34d399; font-size:0.8rem;">CARA BERSARANG JOHN (1 BARIS):</b>
+              <pre style="margin-top:0.5rem; color:#f8fafc; font-size:0.85rem;">massa = int(input('Berat tas:'))</pre>
+              <p style="font-size:0.78rem; color:#cbd5e1; margin-top:0.4rem;">
+                Hasil <code>input()</code> langsung ditangkap oleh <code>int()</code> tanpa perlu disimpan sementara. Lebih ringkas & bersih!
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 2: LEN(INPUT()) - PENGUKUR PANJANG TEKS
+         =================================================================== -->
+    <section id="tab-nesting-len" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-sky);">
+              <span>📏</span> Operasi Bersarang: <code>panjang = len(input())</code>
+            </h2>
+            <p class="card-subtitle">
+              Tugas Survei Hotel: Menghitung jumlah karakter jawaban pengguna secara langsung tanpa variabel perantara!
+            </p>
+          </div>
+          <span class="badge badge-sky">Sintaks: <code>len(input())</code></span>
+        </div>
+
+        <div class="stage-container" style="min-height:380px;">
+          
+          <div class="code-widget-bar">
+            <span class="token-var">total_karakter</span>
+            <span class="token-op">=</span>
+            <span class="token-func-outer" style="border-color:#38bdf8; background:rgba(14, 165, 233, 0.15); color:#38bdf8;">len<span style="color:#f8fafc;">(</span></span>
+            <span class="token-func-inner">input<span style="color:#f8fafc;">('Apa yang kamu sukai?')</span></span>
+            <span style="color:#f8fafc;">)</span>
+          </div>
+
+          <div class="step-banner" id="step-banner-len">
+            <span>💡</span>
+            <span>Ketik kalimat ulasan survei hotel di bawah ini, lalu lihat meteran <code>len()</code> mengukur secara bersarang!</span>
+          </div>
+
+          <div style="display:flex; flex-direction:column; align-items:center; gap:1.25rem; width:100%; max-width:550px; z-index:4;">
+            <div style="width:100%; background:rgba(2, 6, 23, 0.8); border:1.5px solid #334155; border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:0.5rem;">
+              <label style="font-size:0.8rem; color:#94a3b8; font-weight:700;">Jawaban Survei Pengguna (input):</label>
+              <input type="text" id="input-survey-text" value="Pelayanan ramah sekali" class="inline-input" style="width:100%; box-sizing:border-box; background:#0f172a; border:1.5px solid #38bdf8; color:#f8fafc; padding:0.65rem 0.85rem; border-radius:10px; font-family:var(--font-mono); font-weight:700;">
+            </div>
+
+            <!-- Meteran Pengukur Pita len() -->
+            <div style="width:100%; background:#1e293b; border:2px solid #34d399; border-radius:14px; padding:1rem 1.5rem; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.75rem; color:#94a3b8; font-weight:700; text-transform:uppercase;">Hasil Pita Ukur len():</span>
+                <div style="font-family:var(--font-mono); font-size:1.8rem; font-weight:900; color:#34d399;" id="label-len-count">
+                  22 Karakter
+                </div>
+              </div>
+              <button class="btn-action btn-primary" id="btn-measure-len">
+                <span>📏</span> Tarik Meteran len(input())
+              </button>
+            </div>
+          </div>
+
+          <div style="font-size:0.85rem; color:#cbd5e1; z-index:4; text-align:center;">
+            ⚡ <b>Kesimpulan:</b> Fungsi <code>input()</code> menghasilkan string $\rightarrow$ fungsi <code>len()</code> langsung menghitung panjangnya $\rightarrow$ menghasilkan angka integer <b>22</b>!
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 3: ATURAN BERSARANG (RETURN VALUE VS NO RETURN)
+         =================================================================== -->
+    <section id="tab-return-rule" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-rose);">
+              <span>⚖️</span> Aturan Emas: Mengapa <code>print()</code> TIDAK BISA Disarangkan ke Fungsi Lain?
+            </h2>
+            <p class="card-subtitle">
+              Slide 29-30: Hanya fungsi yang <b>mengembalikan hasil (Return Value)</b> yang boleh dimasukkan ke dalam fungsi lain!
+            </p>
+          </div>
+          <span class="badge badge-rose">Kuis Interaktif Validasi</span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.25rem;">
+          
+          <div style="background:rgba(16, 185, 129, 0.08); border:2px solid #10b981; border-radius:14px; padding:1.25rem;">
+            <h4 style="color:#34d399; font-weight:800; font-size:1rem; display:flex; align-items:center; gap:0.4rem; margin-bottom:0.5rem;">
+              <span>✅</span> Perintah yang MENGEMBALIKAN Hasil:
+            </h4>
+            <p style="font-size:0.82rem; color:#cbd5e1; line-height:1.5; margin-bottom:0.75rem;">
+              Setelah selesai bekerja, fungsi ini menyodorkan benda/data baru untuk diolah oleh fungsi luar:
+            </p>
+            <ul style="padding-left:1.2rem; font-size:0.82rem; color:#94a3b8; display:flex; flex-direction:column; gap:0.4rem; font-family:var(--font-mono);">
+              <li><code>input()</code> &rarr; Menghasilkan String</li>
+              <li><code>len()</code> &rarr; Menghasilkan Angka Integer</li>
+              <li><code>harga1 + harga2</code> &rarr; Menghasilkan Angka Hasil</li>
+            </ul>
+            <div style="margin-top:1rem; padding:0.6rem; background:rgba(2, 6, 23, 0.6); border-radius:8px; font-size:0.75rem; color:#6ee7b7;">
+              <b>Status:</b> BISA disarangkan ke dalam <code>int()</code>, <code>str()</code>, atau <code>len()</code>!
+            </div>
+          </div>
+
+          <div style="background:rgba(244, 63, 94, 0.08); border:2px solid #f43f5e; border-radius:14px; padding:1.25rem;">
+            <h4 style="color:#fb7185; font-weight:800; font-size:1rem; display:flex; align-items:center; gap:0.4rem; margin-bottom:0.5rem;">
+              <span>❌</span> Perintah yang TIDAK Mengembalikan Hasil:
+            </h4>
+            <p style="font-size:0.82rem; color:#cbd5e1; line-height:1.5; margin-bottom:0.75rem;">
+              Hanya melakukan aksi di layar tapi tidak menyodorkan data apa pun ke dalam kode (menghasilkan <code>None</code>):
+            </p>
+            <ul style="padding-left:1.2rem; font-size:0.82rem; color:#94a3b8; display:flex; flex-direction:column; gap:0.4rem; font-family:var(--font-mono);">
+              <li><code>print('Halo')</code> &rarr; Hanya tampil di monitor</li>
+            </ul>
+            <div style="margin-top:1.6rem; padding:0.6rem; background:rgba(2, 6, 23, 0.6); border-radius:8px; font-size:0.75rem; color:#fda4af;">
+              <b>Bahaya:</b> <code>int(print('10'))</code> akan menghasilkan <b>TypeError</b> karena <code>print()</code> tidak memberikan data angka!
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Simulator Uji Coba Celah Perintah -->
+        <div style="background:rgba(2, 6, 23, 0.85); border:1.5px solid #334155; border-radius:14px; padding:1.25rem;">
+          <h4 style="font-size:0.95rem; font-weight:800; color:var(--accent-amber); margin-bottom:0.75rem;">
+            🧪 Lab Pengujian Sintaks: Coba Sarangkan Dua Perintah:
+          </h4>
+          <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
+            <select id="select-outer-func" style="background:#0f172a; border:1.5px solid #334155; color:#f8fafc; padding:0.6rem; border-radius:8px; font-family:var(--font-mono); font-weight:700;">
+              <option value="int">int( ... )</option>
+              <option value="len">len( ... )</option>
+            </select>
+            <span style="color:#94a3b8; font-weight:800;">dibungkus dengan:</span>
+            <select id="select-inner-func" style="background:#0f172a; border:1.5px solid #334155; color:#f8fafc; padding:0.6rem; border-radius:8px; font-family:var(--font-mono); font-weight:700;">
+              <option value="input">input('100') [Ada Hasil]</option>
+              <option value="print">print('100') [TIDAK Ada Hasil]</option>
+            </select>
+            <button class="btn-action btn-primary" id="btn-test-compatibility">
+              <span>🔬</span> Uji Apakah Valid?
+            </button>
+          </div>
+          <div id="test-result-box" style="margin-top:1rem; padding:0.85rem 1rem; border-radius:10px; font-size:0.85rem; display:none;">
+            <!-- Hasil tes dinamis via JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 4: KERINGKASAN VS KETERBACAAN (CLEAN CODE)
+         =================================================================== -->
+    <section id="tab-clean-code" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-emerald);">
+              <span>🧼</span> Keseimbangan: Kode Ringkas vs Kode Mudah Dibaca
+            </h2>
+            <p class="card-subtitle">
+              Kasus Ekstrem John (Slide 39-41): Apakah program yang paling pendek selalu program yang paling bagus?
+            </p>
+          </div>
+          <span class="badge badge-amber">Senior Developer Insight</span>
+        </div>
+
+        <!-- Meteran Keterbacaan -->
+        <div class="meter-container">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <b style="font-size:0.95rem; color:#f8fafc;">Barometer Keterbacaan Tim (Readability Score):</b>
+              <p style="font-size:0.78rem; color:#94a3b8;" id="meter-status-desc">Pilih salah satu versi kode di bawah ini!</p>
+            </div>
+            <span class="badge badge-emerald" id="meter-score-badge" style="font-size:0.95rem; padding:0.4rem 0.85rem;">Skor: 95% (Ideal)</span>
+          </div>
+          <div class="meter-bar-track">
+            <div class="meter-bar-fill" id="meter-fill-bar" style="width:95%;"></div>
+          </div>
+        </div>
+
+        <!-- Pilihan 3 Versi Kode -->
+        <div class="code-comparison-grid">
+          
+          <!-- Opsi A: Terlalu Panjang (8 Baris) -->
+          <div class="code-snippet-box" id="card-code-long">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+              <b style="color:#94a3b8;">VERSI A: Terlalu Panjang</b>
+              <span class="badge badge-amber">8 Baris</span>
+            </div>
+            <pre style="color:#cbd5e1; font-size:0.75rem;">fb1 = input('Suka?')
+fb2 = input('Tidak?')
+fb3 = input('Saran?')
+l1 = len(fb1)
+l2 = len(fb2)
+l3 = len(fb3)
+total = l1 + l2 + l3
+print('Total:', total)</pre>
+            <p style="font-size:0.75rem; color:#64748b; margin-top:0.5rem;">
+              Banyak variabel sementara yang tidak dibutuhkan (l1, l2, l3).
+            </p>
+          </div>
+
+          <!-- Opsi B: Paling Ideal & Bersih (4 Baris) -->
+          <div class="code-snippet-box selected" id="card-code-ideal">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+              <b style="color:#34d399;">VERSI B: Keseimbangan Ideal (Cole)</b>
+              <span class="badge badge-emerald">4 Baris (Disarankan)</span>
+            </div>
+            <pre style="color:#34d399; font-size:0.75rem;">l1 = len(input('Suka?'))
+l2 = len(input('Tidak?'))
+l3 = len(input('Saran?'))
+print('Total:', l1 + l2 + l3)</pre>
+            <p style="font-size:0.75rem; color:#a7f3d0; margin-top:0.5rem;">
+              Ringkas, rapi, dan siapa pun langsung paham alurnya!
+            </p>
+          </div>
+
+          <!-- Opsi C: Monster 1 Baris John -->
+          <div class="code-snippet-box" id="card-code-monster">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+              <b style="color:#f43f5e;">VERSI C: Monster 1 Baris John</b>
+              <span class="badge badge-rose">1 Baris (Bahaya)</span>
+            </div>
+            <pre style="color:#fda4af; font-size:0.75rem;">print('Total:', len(input('Suka?')) + len(input('Tidak?')) + len(input('Saran?')))</pre>
+            <p style="font-size:0.75rem; color:#fb7185; margin-top:0.5rem;">
+              Terlalu padat! Sulit dibaca, jika ada error di tengah akan sangat susah didebug.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 5: SINAR RADAR KOMENTAR (#)
+         =================================================================== -->
+    <section id="tab-comments" class="tab-content">
+      <div class="card" style="display: flex; flex-direction: column; gap: 1.25rem;">
+        
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" style="color: var(--accent-violet);">
+              <span>💬</span> Radar Interpreter: Mengapa Komentar (<code>#</code>) Dibuat?
+            </h2>
+            <p class="card-subtitle">
+              Slide 51-55: Komentar adalah catatan rahasia antar developer yang <b>100% dilewati dan tidak dieksekusi</b> oleh komputer!
+            </p>
+          </div>
+          <span class="badge badge-violet">Catatan Pengembang</span>
+        </div>
+
+        <div class="stage-container" style="min-height:360px;">
+          
+          <div style="width:100%; max-width:620px; background:#020617; border:2px solid #334155; border-radius:14px; padding:1.25rem; font-family:var(--font-mono); font-size:0.95rem; line-height:1.7; position:relative;" id="code-radar-block">
+            
+            <div class="code-line-radar" id="radar-l1" style="padding:0.25rem 0.6rem; border-radius:6px;">
+              <span style="color:#38bdf8;">harga</span> <span style="color:#f59e0b;">=</span> <span style="color:#a78bfa;">int</span>(<span style="color:#34d399;">input</span>(<span style="color:#fbbf24;">'Harga paket tur:'</span>))
+            </div>
+
+            <div class="code-line-radar" id="radar-l2" style="padding:0.25rem 0.6rem; border-radius:6px; color:#64748b; font-style:italic;">
+              <span style="color:#10b981; font-weight:800;"># Diskon 5% untuk liburan akhir pekan</span>
+            </div>
+
+            <div class="code-line-radar" id="radar-l3" style="padding:0.25rem 0.6rem; border-radius:6px;">
+              <span style="color:#a78bfa;">print</span>(<span style="color:#fbbf24;">'Cashback:'</span>, <span style="color:#38bdf8;">harga</span> <span style="color:#f59e0b;">*</span> <span style="color:#34d399;">0.05</span>)
+            </div>
+
+          </div>
+
+          <div class="step-banner" id="step-banner-radar">
+            <span>💡</span>
+            <span id="step-banner-radar-text">Tekan tombol <b>"Pindai Sinar Interpreter"</b> untuk melihat bagaimana radar komputer melewati baris komentar bertanda <code>#</code>!</span>
+          </div>
+
+          <button class="btn-action btn-primary" id="btn-scan-radar" style="z-index:5;">
+            <span>📡</span> Pindai Sinar Interpreter (Scan Baris per Baris)
+          </button>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Teacher Notes (Drawer Panduan Tutor Algonova Task Pelajaran 4) -->
+    <teacher-notes>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div>
+          <h4 style="font-weight: 800; color: var(--accent-amber); margin-bottom: 0.35rem;">
+            Kunci Jawaban & Panduan Task Pelajaran 4 Algonova:
+          </h4>
+          <ul style="padding-left: 1.25rem; font-size: 0.82rem; display: flex; flex-direction: column; gap: 0.45rem; line-height: 1.5;">
+            <li>
+              <b>Tugas Operator Tur (Bagasi):</b><br>
+              <code>massa1 = int(input('Berat dari tas:'))</code><br>
+              <code>massa2 = int(input('Berat carry-on:'))</code><br>
+              <code>massa3 = int(input('Berat ekstra:'))</code><br>
+              <code>total = massa1 + massa2 + massa3</code><br>
+              <code>print('Total berat dari bagasi:', total)</code>
+            </li>
+            <li>
+              <b>Tugas Makan Malam Hotel:</b><br>
+              <code>harga = int(input('Harga:'))</code><br>
+              <code>hari = int(input('Banyak hari:'))</code><br>
+              <code>print(harga * hari)</code>
+            </li>
+            <li>
+              <b>Tugas Survei Panjang Karakter:</b><br>
+              <code>l1 = len(input('Apa yang kamu sukai?'))</code><br>
+              <code>l2 = len(input('Apa yang tidak kamu sukai?'))</code><br>
+              <code>l3 = len(input('Apa yang bisa diperbaiki?'))</code><br>
+              <code>print('Total karakter:', l1 + l2 + l3)</code>
+            </li>
+            <li>
+              <b>Wawancara Teknis (Slide 61):</b><br>
+              - <i>Apa itu konstruksi bersarang?</i> Menulis satu perintah/fungsi di dalam kurung fungsi lain.<br>
+              - <i>Apa syaratnya?</i> Fungsi dalam wajib mengembalikan hasil (Return Value).<br>
+              - <i>Mengapa kode harus mudah dibaca?</i> Karena kode dibaca dan dikerjakan bersama developer lain dalam tim profesional!
+            </li>
+          </ul>
+        </div>
+      </div>
+    </teacher-notes>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 1.5rem 0; font-size: 0.8rem; color: #64748b;">
+      Algo Visual Lab &bull; Media Peraga Visual Python Pertemuan 4 &bull; Algonova
+    </footer>
+
+  </div>
+
+  <!-- SCRIPT LOGIKA PERTEMUAN 4 -->
+  <script>
+    /* ==========================================================================
+       WEB AUDIO SYNTHESIZER MANDIRI (ZERO DEPENDENCY)
+       ========================================================================== */
+    class AudioEngineP4 {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      toggle() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+      }
+      playTone(freq, type = 'sine', duration = 0.08, volume = 0.12) {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+      playMachineStep1() {
+        this.playTone(400, 'triangle', 0.06, 0.12);
+        setTimeout(() => this.playTone(550, 'triangle', 0.08, 0.14), 50);
+      }
+      playMachineStep2() {
+        this.playTone(600, 'sawtooth', 0.08, 0.12);
+        setTimeout(() => this.playTone(850, 'sine', 0.12, 0.18), 70);
+      }
+      playSuccess() {
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+          setTimeout(() => this.playTone(f, 'triangle', 0.1, 0.15), i * 65);
+        });
+      }
+      playError() {
+        this.playTone(180, 'sawtooth', 0.25, 0.18);
+      }
+    }
+
+    const sound = new AudioEngineP4();
+
+    // Toggle Sound Button
+    const btnToggleSound = document.getElementById('btn-toggle-sound');
+    if (btnToggleSound) {
+      btnToggleSound.addEventListener('click', () => {
+        const state = sound.toggle();
+        btnToggleSound.textContent = state ? '🔊 Suara: ON' : '🔇 Suara: OFF';
+      });
+    }
+
+    /* ==========================================================================
+       TAB SWITCHING
+       ========================================================================== */
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-tab');
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const targetContent = document.getElementById(targetId);
+        if (targetContent) targetContent.classList.add('active');
+        sound.playTone(460, 'sine', 0.04, 0.08);
+      });
+    });
+
+    /* ==========================================================================
+       TAB 1: INT(INPUT()) LOGIC
+       ========================================================================== */
+    const btnRunNestingInt = document.getElementById('btn-run-nesting-int');
+    const inputBagasiVal = document.getElementById('input-bagasi-val');
+    const parcelInnerResult = document.getElementById('parcel-inner-result');
+    const parcelOuterResult = document.getElementById('parcel-outer-result');
+    const boxSlotVal = document.getElementById('box-slot-val');
+    const machineInnerBox = document.getElementById('machine-inner-box');
+    const machineOuterBox = document.getElementById('machine-outer-box');
+    const varTargetBox = document.getElementById('var-target-box');
+    const stepBannerIntText = document.getElementById('step-banner-int-text');
+    const tokenOuter = document.getElementById('token-outer');
+    const tokenInner = document.getElementById('token-inner');
+
+    let isP1Animating = false;
+
+    btnRunNestingInt?.addEventListener('click', () => {
+      if (isP1Animating) return;
+      isP1Animating = true;
+
+      const userVal = inputBagasiVal.value.trim() || '23';
+
+      // Reset
+      tokenOuter.classList.remove('token-active-pulse');
+      tokenInner.classList.remove('token-active-pulse');
+      parcelOuterResult.style.display = 'none';
+      boxSlotVal.textContent = '-';
+
+      // LANGKAH 1 (DALAM): input() dieksekusi dulu!
+      stepBannerIntText.innerHTML = `<b>Langkah 1 (Dalam):</b> Fungsi <code>input()</code> meminta teks keyboard &rarr; Menghasilkan string berhelm kutip: <b style="color:#fbbf24">"${userVal}"</b>.`;
+      tokenInner.classList.add('token-active-pulse');
+      machineInnerBox.style.borderColor = '#fbbf24';
+      parcelInnerResult.innerHTML = `"${userVal}" <span style="font-size:0.65rem; opacity:0.8;">[str]</span>`;
+      sound.playMachineStep1();
+
+      setTimeout(() => {
+        // LANGKAH 2 (LUAR): int() menangkap string & mengonversinya
+        tokenInner.classList.remove('token-active-pulse');
+        tokenOuter.classList.add('token-active-pulse');
+        machineOuterBox.classList.add('processing');
+        stepBannerIntText.innerHTML = `<b>Langkah 2 (Luar):</b> Fungsi <code>int()</code> menangkap string <b style="color:#fbbf24">"${userVal}"</b>, membersihkan kutipnya &rarr; Menjadi angka bulat murni <b style="color:#34d399">${userVal}</b>!`;
+        
+        parcelOuterResult.style.display = 'inline-flex';
+        parcelOuterResult.innerHTML = `${userVal} <span style="font-size:0.65rem; opacity:0.8;">[int]</span>`;
+        sound.playMachineStep2();
+
+        setTimeout(() => {
+          // LANGKAH 3: Disimpan ke variabel massa
+          tokenOuter.classList.remove('token-active-pulse');
+          machineOuterBox.classList.remove('processing');
+          machineInnerBox.style.borderColor = '#34d399';
+          varTargetBox.style.borderColor = '#10b981';
+          boxSlotVal.textContent = userVal;
+          stepBannerIntText.innerHTML = `✨ <b>Selesai:</b> Angka <b style="color:#34d399">${userVal}</b> tersimpan rapi ke dalam kotak variabel <code>massa</code>!`;
+          sound.playSuccess();
+          isP1Animating = false;
+        }, 750);
+
+      }, 850);
+    });
+
+    // Toggle Tombol Bandingkan Versi 2 Baris
+    const btnCompareTwoLines = document.getElementById('btn-compare-two-lines');
+    const compareModalBox = document.getElementById('compare-modal-box');
+    btnCompareTwoLines?.addEventListener('click', () => {
+      const isHidden = compareModalBox.style.display === 'none';
+      compareModalBox.style.display = isHidden ? 'block' : 'none';
+      sound.playTone(500, 'sine', 0.05, 0.1);
+    });
+
+    /* ==========================================================================
+       TAB 2: LEN(INPUT()) LOGIC
+       ========================================================================== */
+    const btnMeasureLen = document.getElementById('btn-measure-len');
+    const inputSurveyText = document.getElementById('input-survey-text');
+    const labelLenCount = document.getElementById('label-len-count');
+    const stepBannerLen = document.getElementById('step-banner-len');
+
+    btnMeasureLen?.addEventListener('click', () => {
+      const txt = inputSurveyText.value || '';
+      const len = txt.length;
+      labelLenCount.textContent = `${len} Karakter`;
+      labelLenCount.style.transform = 'scale(1.15)';
+      setTimeout(() => labelLenCount.style.transform = 'scale(1)', 200);
+
+      stepBannerLen.innerHTML = `<span>📏</span> Teks <b>"${txt}"</b> dimasukkan ke <code>len()</code> &rarr; Menghasilkan angka <b>${len}</b> secara langsung!`;
+      sound.playTone(600, 'sine', 0.06, 0.12);
+      setTimeout(() => sound.playTone(800, 'triangle', 0.1, 0.15), 50);
+    });
+
+    /* ==========================================================================
+       TAB 3: ATURAN RETURN VALUE LOGIC
+       ========================================================================== */
+    const btnTestCompatibility = document.getElementById('btn-test-compatibility');
+    const selectOuterFunc = document.getElementById('select-outer-func');
+    const selectInnerFunc = document.getElementById('select-inner-func');
+    const testResultBox = document.getElementById('test-result-box');
+
+    btnTestCompatibility?.addEventListener('click', () => {
+      const outer = selectOuterFunc.value;
+      const inner = selectInnerFunc.value;
+      testResultBox.style.display = 'block';
+
+      if (inner === 'input') {
+        testResultBox.style.background = 'rgba(16, 185, 129, 0.15)';
+        testResultBox.style.border = '1.5px solid #10b981';
+        testResultBox.style.color = '#6ee7b7';
+        testResultBox.innerHTML = `
+          <b>✅ VALID & BISA DIJALANKAN!</b><br>
+          Sintaks <code>${outer}(input('...'))</code> sah karena <code>input()</code> mengembalikan data teks (Return Value) yang siap diolah oleh <code>${outer}()</code>.
+        `;
+        sound.playSuccess();
+      } else {
+        testResultBox.style.background = 'rgba(244, 63, 94, 0.15)';
+        testResultBox.style.border = '1.5px solid #f43f5e';
+        testResultBox.style.color = '#fda4af';
+        testResultBox.innerHTML = `
+          <b>⛔ ERROR (TIDAK BISA DISARANGKAN)!</b><br>
+          Sintaks <code>${outer}(print('...'))</code> akan menyebabkan error! Fungsi <code>print()</code> hanya bertugas memancarkan tulisan ke monitor dan menghasilkan nilai kosong (<code>None</code>). Mesin <code>${outer}()</code> akan bingung karena tidak menerima data apa pun!
+        `;
+        sound.playError();
+      }
+    });
+
+    /* ==========================================================================
+       TAB 4: READABILITY BAROMETER LOGIC
+       ========================================================================== */
+    const cardCodeLong = document.getElementById('card-code-long');
+    const cardCodeIdeal = document.getElementById('card-code-ideal');
+    const cardCodeMonster = document.getElementById('card-code-monster');
+    const meterFillBar = document.getElementById('meter-fill-bar');
+    const meterScoreBadge = document.getElementById('meter-score-badge');
+    const meterStatusDesc = document.getElementById('meter-status-desc');
+
+    function selectReadability(type) {
+      [cardCodeLong, cardCodeIdeal, cardCodeMonster].forEach(c => c?.classList.remove('selected'));
+
+      if (type === 'long') {
+        cardCodeLong?.classList.add('selected');
+        meterFillBar.style.width = '60%';
+        meterFillBar.style.background = '#f59e0b';
+        meterScoreBadge.className = 'badge badge-amber';
+        meterScoreBadge.textContent = 'Skor: 60% (Terlalu Bertele-tele)';
+        meterStatusDesc.textContent = 'Banyak baris & variabel sementara yang tidak perlu.';
+        sound.playTone(420, 'sine', 0.08, 0.1);
+      } else if (type === 'ideal') {
+        cardCodeIdeal?.classList.add('selected');
+        meterFillBar.style.width = '95%';
+        meterFillBar.style.background = '#10b981';
+        meterScoreBadge.className = 'badge badge-emerald';
+        meterScoreBadge.textContent = 'Skor: 95% (Sangat Ideal & Bersih)';
+        meterStatusDesc.textContent = 'Rapi, hemat baris, dan rekan kerja satu tim langsung mengerti!';
+        sound.playSuccess();
+      } else if (type === 'monster') {
+        cardCodeMonster?.classList.add('selected');
+        meterFillBar.style.width = '20%';
+        meterFillBar.style.background = '#f43f5e';
+        meterScoreBadge.className = 'badge badge-rose';
+        meterScoreBadge.textContent = 'Skor: 20% (Kode Monster John)';
+        meterStatusDesc.textContent = 'Terlalu rumit! Programmer lain akan pusing membacanya.';
+        sound.playError();
+      }
+    }
+
+    cardCodeLong?.addEventListener('click', () => selectReadability('long'));
+    cardCodeIdeal?.addEventListener('click', () => selectReadability('ideal'));
+    cardCodeMonster?.addEventListener('click', () => selectReadability('monster'));
+
+    /* ==========================================================================
+       TAB 5: SCANNER KOMENTAR LOGIC
+       ========================================================================== */
+    const btnScanRadar = document.getElementById('btn-scan-radar');
+    const radarL1 = document.getElementById('radar-l1');
+    const radarL2 = document.getElementById('radar-l2');
+    const radarL3 = document.getElementById('radar-l3');
+    const stepBannerRadarText = document.getElementById('step-banner-radar-text');
+
+    let isScanning = false;
+
+    btnScanRadar?.addEventListener('click', () => {
+      if (isScanning) return;
+      isScanning = true;
+
+      // Baris 1
+      radarL1.style.background = 'rgba(56, 189, 248, 0.25)';
+      radarL2.style.background = 'transparent';
+      radarL3.style.background = 'transparent';
+      stepBannerRadarText.innerHTML = `🔍 <b>Baris 1:</b> Ada kode Python valid <code>harga = int(input())</code> &rarr; <b>DIEKSEKUSI</b>.`;
+      sound.playTone(500, 'sine', 0.06, 0.1);
+
+      setTimeout(() => {
+        // Baris 2 (Komentar #)
+        radarL1.style.background = 'transparent';
+        radarL2.style.background = 'rgba(16, 185, 129, 0.25)';
+        stepBannerRadarText.innerHTML = `⚡ <b>Baris 2 (#):</b> Interpreter mendeteksi simbol <code>#</code> &rarr; <b>DILEWATI 100%!</b> Komputer tidak menjalankan teks ini.`;
+        sound.playTone(750, 'triangle', 0.05, 0.12);
+
+        setTimeout(() => {
+          // Baris 3
+          radarL2.style.background = 'transparent';
+          radarL3.style.background = 'rgba(56, 189, 248, 0.25)';
+          stepBannerRadarText.innerHTML = `🔍 <b>Baris 3:</b> Ada perintah <code>print()</code> &rarr; <b>DIEKSEKUSI</b>.`;
+          sound.playTone(600, 'sine', 0.06, 0.1);
+
+          setTimeout(() => {
+            radarL3.style.background = 'transparent';
+            stepBannerRadarText.innerHTML = `🎉 <b>Selesai Memindai!</b> Komentar sangat berguna untuk memberi catatan ke rekan kerja tanpa mengganggu jalannya program.`;
+            sound.playSuccess();
+            isScanning = false;
+          }, 800);
+
+        }, 900);
+
+      }, 900);
+    });
+  </script>
+
+</body>
+</html>
