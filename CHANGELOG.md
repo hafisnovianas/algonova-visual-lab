@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- **Pertemuan 4 (Desain Ramah ADHD & Alur Mengajar Bebas Slide)**: Merombak total antarmuka modul menjadi *Zero Wall-of-Text* (minimal teks) dengan 5 Tahap Alur Mengajar terpadu (*Misteri John*, *Pabrik int(input)*, *Meteran len()*, *Game Pintu Masuk Return Value*, dan *Radar Komentar*), serta drawer contekan rahasia tutor (Teacher Script & kunci tugas platform) agar pengajaran dapat berjalan 100% tanpa melihat slide.
+- **Pertemuan 4 (Arsitektur Split Workbench Editor & Visual)**: Menerapkan tata letak dua panel berdampingan (*Panel Kiri*: Python Code Editor dengan nomor baris, parameter input, tombol Run hijau, dan terminal konsol; *Panel Kanan*: Kanvas peraga visual hidup untuk pabrik `int(input())`, pita meteran `len()`, perbandingan 2 baris vs John, gerbang error `print()`, dan radar komentar `#`) serta toolbar 5 topik materi instan dan drawer contekan alur mengajar tutor ramah ADHD.
 - **Pertemuan 3 (String & Interpreter)**: Merombak total arsitektur antarmuka menjadi pendekatan *Code-as-Widget*, di mana setiap baris kode Python berfungsi langsung sebagai alat peraga visual interaktif (inline steppers & inputs).
 - Mengeliminasi Stasiun 0 terpisah dan menyatukan seluruh materi ke dalam 5 Tab Operasi Sintaks Terpadu (Variabel & len, Indeks [i], Slicing [a:b], Detektif .find, dan Tipe Data str/Biner).
 - Menambahkan sistem Misi Cepat dengan deteksi otomatis dan audio chime reward untuk studi kasus Algonova Task 51172 & Task 51173.
